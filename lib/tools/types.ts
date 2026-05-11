@@ -11,7 +11,7 @@ export type Tool<TInput = unknown, TOutput = unknown> = {
   description: string;
   inputSchema: z.ZodType<TInput>;
   outputSchema: z.ZodType<TOutput>;
-  execute: (input: TInput, ctx: ToolContext) => Promise<TOutput>;
+  execute(input: TInput, ctx: ToolContext): Promise<TOutput>;
 };
 
 export const SnapshotEntrySchema = z.object({
