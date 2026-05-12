@@ -1,9 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type { RuntimeEvent } from "@/lib/events";
 
-export type RuntimeConfig =
-  | { mode: "record" }
-  | { mode: "replay"; events: RuntimeEvent[] };
+export type RuntimeConfig = { mode: "record" } | { mode: "replay"; events: RuntimeEvent[] };
 
 export class Runtime {
   private readonly mode: "record" | "replay";
@@ -47,15 +45,11 @@ export class Runtime {
 
   private consumeReplay(expectedKind: RuntimeEvent["kind"]): unknown {
     if (this.replayCursor >= this.replayEvents.length) {
-      throw new Error(
-        `Runtime replay events exhausted (expected ${expectedKind})`
-      );
+      throw new Error(`Runtime replay events exhausted (expected ${expectedKind})`);
     }
     const event = this.replayEvents[this.replayCursor++];
     if (event.kind !== expectedKind) {
-      throw new Error(
-        `Runtime replay kind mismatch: expected ${expectedKind}, got ${event.kind}`
-      );
+      throw new Error(`Runtime replay kind mismatch: expected ${expectedKind}, got ${event.kind}`);
     }
     return event.value;
   }

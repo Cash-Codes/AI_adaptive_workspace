@@ -22,10 +22,7 @@ const BASE_REQUEST = {
 
 describe("MockLLMProvider", () => {
   it("returns scripted responses in order", async () => {
-    const mock = new MockLLMProvider([
-      textResponse("first"),
-      textResponse("second"),
-    ]);
+    const mock = new MockLLMProvider([textResponse("first"), textResponse("second")]);
     const r1 = await mock.complete(BASE_REQUEST);
     const r2 = await mock.complete(BASE_REQUEST);
     expect((r1.content[0] as { text: string }).text).toBe("first");

@@ -1,9 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
-import type {
-  LLMProvider,
-  LLMRequest,
-  LLMResponse,
-} from "@/lib/runtime/llm-provider";
+import type { LLMProvider, LLMRequest, LLMResponse } from "@/lib/runtime/llm-provider";
 import type { ContentBlock } from "@/lib/events";
 
 export type AnthropicLLMProviderConfig = {
@@ -15,9 +11,7 @@ export class AnthropicLLMProvider implements LLMProvider {
   private readonly client: Anthropic;
 
   constructor(config: AnthropicLLMProviderConfig = {}) {
-    this.client =
-      config.client ??
-      new Anthropic(config.apiKey ? { apiKey: config.apiKey } : {});
+    this.client = config.client ?? new Anthropic(config.apiKey ? { apiKey: config.apiKey } : {});
   }
 
   async complete(request: LLMRequest): Promise<LLMResponse> {

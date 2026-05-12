@@ -1,9 +1,5 @@
 import { describe, it, expect } from "vitest";
-import type {
-  LLMProvider,
-  LLMRequest,
-  LLMResponse,
-} from "@/lib/runtime/llm-provider";
+import type { LLMProvider, LLMRequest, LLMResponse } from "@/lib/runtime/llm-provider";
 
 describe("LLMProvider contract", () => {
   it("complete() takes an LLMRequest and returns an LLMResponse", async () => {

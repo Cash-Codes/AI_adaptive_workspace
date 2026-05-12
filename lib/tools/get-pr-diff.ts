@@ -10,8 +10,7 @@ const Output = z.string();
 
 export const getPrDiff: Tool<z.infer<typeof Input>, z.infer<typeof Output>> = {
   name: "get_pr_diff",
-  description:
-    "Fetch the raw unified diff (`diff --git ...`) for a given pull request.",
+  description: "Fetch the raw unified diff (`diff --git ...`) for a given pull request.",
   inputSchema: Input,
   outputSchema: Output,
   execute: async (input, ctx) => {
@@ -20,14 +19,12 @@ export const getPrDiff: Tool<z.infer<typeof Input>, z.infer<typeof Output>> = {
       headers: {
         Accept: "application/vnd.github.v3.diff",
         "X-GitHub-Api-Version": "2022-11-28",
-        ...(ctx.githubToken
-          ? { Authorization: `Bearer ${ctx.githubToken}` }
-          : {}),
+        ...(ctx.githubToken ? { Authorization: `Bearer ${ctx.githubToken}` } : {}),
       },
     });
     if (!res.ok) {
       throw new Error(
-        `GitHub API error for get_pr_diff(${input.repo}#${input.pr_id}): ${res.status} ${res.statusText}`
+        `GitHub API error for get_pr_diff(${input.repo}#${input.pr_id}): ${res.status} ${res.statusText}`,
       );
     }
     const text = await res.text();

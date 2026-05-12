@@ -74,7 +74,7 @@ describe("AnthropicLLMProvider", () => {
             input_schema: { type: "object" },
           },
         ],
-      })
+      }),
     );
 
     const sdkArgs = sdkCreate.mock.calls[0][0];

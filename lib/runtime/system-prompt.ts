@@ -26,9 +26,7 @@ export const emitDecisionTool: ToolDefinition = {
 };
 
 export function buildSystemPrompt(tools: Tool[]): string {
-  const toolDescriptions = tools
-    .map((t) => `- ${t.name}: ${t.description}`)
-    .join("\n");
+  const toolDescriptions = tools.map((t) => `- ${t.name}: ${t.description}`).join("\n");
 
   return [
     "You are an investigation agent in the Adaptive Workspace runtime.",

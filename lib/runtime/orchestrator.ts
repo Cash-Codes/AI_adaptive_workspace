@@ -12,11 +12,7 @@ import type { Run } from "@/lib/storage/json-store";
 import type { LLMProvider, LLMRequest } from "@/lib/runtime/llm-provider";
 import type { ToolRunner } from "@/lib/tools/runner";
 import { Runtime } from "@/lib/runtime/runtime-utils";
-import {
-  buildSystemPrompt,
-  emitDecisionTool,
-  toolToDefinition,
-} from "@/lib/runtime/system-prompt";
+import { buildSystemPrompt, emitDecisionTool, toolToDefinition } from "@/lib/runtime/system-prompt";
 import type { Tool } from "@/lib/tools/types";
 
 export type WorkflowOrchestratorConfig = {

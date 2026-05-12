@@ -9,7 +9,10 @@ const Input = z.object({
 const PRSummary = z.object({
   number: z.number(),
   title: z.string(),
-  body: z.string().nullable().transform((v) => v ?? ""),
+  body: z
+    .string()
+    .nullable()
+    .transform((v) => v ?? ""),
   state: z.string(),
   user: z.object({ login: z.string() }),
   created_at: z.string(),
@@ -32,14 +35,12 @@ export const getRecentPrs: Tool<z.infer<typeof Input>, z.infer<typeof Output>> =
       headers: {
         Accept: "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
-        ...(ctx.githubToken
-          ? { Authorization: `Bearer ${ctx.githubToken}` }
-          : {}),
+        ...(ctx.githubToken ? { Authorization: `Bearer ${ctx.githubToken}` } : {}),
       },
     });
     if (!res.ok) {
       throw new Error(
-        `GitHub API error for get_recent_prs(${input.repo}): ${res.status} ${res.statusText}`
+        `GitHub API error for get_recent_prs(${input.repo}): ${res.status} ${res.statusText}`,
       );
     }
     const data = await res.json();

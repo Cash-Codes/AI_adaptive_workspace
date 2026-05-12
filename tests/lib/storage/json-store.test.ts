@@ -60,7 +60,7 @@ describe("JsonRunStore", () => {
       JSON.stringify({
         metadata: { id: "bad", created_at: 1, workflow: "x" },
         events: [{ type: "garbage", id: "x", timestamp: 1 }],
-      })
+      }),
     );
     await expect(store.read("bad")).rejects.toThrow();
   });

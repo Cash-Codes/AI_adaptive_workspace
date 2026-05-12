@@ -9,9 +9,7 @@ export function canonicalJSONStringify(value: unknown): string {
   }
   const obj = value as Record<string, unknown>;
   const keys = Object.keys(obj).sort();
-  const parts = keys.map(
-    (k) => JSON.stringify(k) + ":" + canonicalJSONStringify(obj[k])
-  );
+  const parts = keys.map((k) => JSON.stringify(k) + ":" + canonicalJSONStringify(obj[k]));
   return "{" + parts.join(",") + "}";
 }
 

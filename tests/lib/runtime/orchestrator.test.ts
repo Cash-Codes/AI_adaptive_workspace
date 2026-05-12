@@ -6,10 +6,7 @@ import { tools as githubTools } from "@/lib/tools/registry";
 import { githubSnapshot } from "@/fixtures/github-snapshot";
 import type { LLMResponse } from "@/lib/runtime/llm-provider";
 
-function llmCall(
-  content: LLMResponse["content"],
-  stop_reason = "end_turn"
-): LLMResponse {
+function llmCall(content: LLMResponse["content"], stop_reason = "end_turn"): LLMResponse {
   return {
     content,
     stop_reason,
@@ -40,9 +37,7 @@ function buildRunner() {
 
 describe("WorkflowOrchestrator", () => {
   it("runs a single-step workflow (text-only response → terminates)", async () => {
-    const provider = new MockLLMProvider([
-      llmCall([mockText("Nothing to investigate.")]),
-    ]);
+    const provider = new MockLLMProvider([llmCall([mockText("Nothing to investigate.")])]);
     const orch = new WorkflowOrchestrator({
       llm: provider,
       toolRunner: buildRunner(),
@@ -60,10 +55,7 @@ describe("WorkflowOrchestrator", () => {
 
   it("dispatches a regular tool call through the runner and records a ToolCallRecord", async () => {
     const provider = new MockLLMProvider([
-      llmCall(
-        [mockToolUse("toolu_1", "get_recent_prs", { repo: REPO, limit: 20 })],
-        "tool_use"
-      ),
+      llmCall([mockToolUse("toolu_1", "get_recent_prs", { repo: REPO, limit: 20 })], "tool_use"),
       llmCall([mockText("Found 10 PRs. Done.")]),
     ]);
     const orch = new WorkflowOrchestrator({
@@ -75,14 +67,11 @@ describe("WorkflowOrchestrator", () => {
 
     const run = await orch.run("List PRs.");
 
-    const orderedTypes = run.events
-      .filter((e) => e.type !== "runtime")
-      .map((e) => e.type);
+    const orderedTypes = run.events.filter((e) => e.type !== "runtime").map((e) => e.type);
     expect(orderedTypes).toEqual(["llm_call", "tool_call", "llm_call"]);
 
     const toolCall = run.events.find((e) => e.type === "tool_call");
-    if (!toolCall || toolCall.type !== "tool_call")
-      throw new Error("expected tool_call");
+    if (!toolCall || toolCall.type !== "tool_call") throw new Error("expected tool_call");
     expect(toolCall.tool).toBe("get_recent_prs");
     expect(toolCall.arguments).toEqual({ repo: REPO, limit: 20 });
   });
@@ -98,7 +87,7 @@ describe("WorkflowOrchestrator", () => {
             alternatives: ["investigate_commits"],
           }),
         ],
-        "tool_use"
+        "tool_use",
       ),
       llmCall([mockText("Concluded.")]),
     ]);
@@ -111,14 +100,11 @@ describe("WorkflowOrchestrator", () => {
 
     const run = await orch.run("Decide.");
 
-    const orderedTypes = run.events
-      .filter((e) => e.type !== "runtime")
-      .map((e) => e.type);
+    const orderedTypes = run.events.filter((e) => e.type !== "runtime").map((e) => e.type);
     expect(orderedTypes).toEqual(["llm_call", "decision", "llm_call"]);
 
     const decision = run.events.find((e) => e.type === "decision");
-    if (!decision || decision.type !== "decision")
-      throw new Error("expected decision");
+    if (!decision || decision.type !== "decision") throw new Error("expected decision");
     expect(decision.decision).toBe("investigate_prs");
     expect(decision.label).toBe("Investigate PRs");
     expect(decision.reasoning).toBe("Likeliest source of regression");
@@ -137,8 +123,7 @@ describe("WorkflowOrchestrator", () => {
     const run = await orch.run("hello");
 
     const llmCallEvent = run.events.find((e) => e.type === "llm_call");
-    if (!llmCallEvent || llmCallEvent.type !== "llm_call")
-      throw new Error("expected llm_call");
+    if (!llmCallEvent || llmCallEvent.type !== "llm_call") throw new Error("expected llm_call");
     expect(llmCallEvent.request.model).toBe("mock-model");
     expect(llmCallEvent.request_hash).toMatch(/^[0-9a-f]{64}$/);
     expect(llmCallEvent.response.stop_reason).toBe("end_turn");
@@ -171,8 +156,7 @@ describe("WorkflowOrchestrator", () => {
 
     const run = await orch.run("hello");
     const llmEvent = run.events.find((e) => e.type === "llm_call");
-    if (!llmEvent || llmEvent.type !== "llm_call")
-      throw new Error("expected llm_call");
+    if (!llmEvent || llmEvent.type !== "llm_call") throw new Error("expected llm_call");
     expect(typeof llmEvent.diagnostics?.latency_ms).toBe("number");
     expect(llmEvent.diagnostics?.latency_ms).toBeGreaterThanOrEqual(0);
   });

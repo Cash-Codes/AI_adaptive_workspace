@@ -21,10 +21,7 @@ describe("Runtime — record mode", () => {
     const b = runtime.uuid();
     expect(a).not.toBe(b);
     expect(runtime.events).toHaveLength(2);
-    expect(runtime.events.map((e) => e.kind)).toEqual([
-      "random_uuid",
-      "random_uuid",
-    ]);
+    expect(runtime.events.map((e) => e.kind)).toEqual(["random_uuid", "random_uuid"]);
   });
 
   it("event ids and timestamps are themselves recorded values", () => {

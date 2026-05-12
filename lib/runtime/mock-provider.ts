@@ -1,8 +1,4 @@
-import type {
-  LLMProvider,
-  LLMRequest,
-  LLMResponse,
-} from "@/lib/runtime/llm-provider";
+import type { LLMProvider, LLMRequest, LLMResponse } from "@/lib/runtime/llm-provider";
 
 export class MockLLMProvider implements LLMProvider {
   readonly requests: LLMRequest[] = [];
@@ -13,9 +9,7 @@ export class MockLLMProvider implements LLMProvider {
   async complete(request: LLMRequest): Promise<LLMResponse> {
     this.requests.push(request);
     if (this.cursor >= this.scripted.length) {
-      throw new Error(
-        `MockLLMProvider exhausted after ${this.scripted.length} response(s)`
-      );
+      throw new Error(`MockLLMProvider exhausted after ${this.scripted.length} response(s)`);
     }
     return this.scripted[this.cursor++];
   }

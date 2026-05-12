@@ -1,10 +1,5 @@
 import { canonicalJSONStringify } from "@/lib/hash";
-import type {
-  Tool,
-  ToolContext,
-  ToolRunMode,
-  Snapshot,
-} from "@/lib/tools/types";
+import type { Tool, ToolContext, ToolRunMode, Snapshot } from "@/lib/tools/types";
 
 export type ToolRunnerConfig = {
   mode: ToolRunMode;
@@ -48,13 +43,9 @@ export class ToolRunner {
   private lookupSnapshot(name: string, input: unknown): unknown {
     const entries = this.snapshot[name] ?? [];
     const target = canonicalJSONStringify(input);
-    const match = entries.find(
-      (e) => canonicalJSONStringify(e.arguments) === target
-    );
+    const match = entries.find((e) => canonicalJSONStringify(e.arguments) === target);
     if (!match) {
-      throw new Error(
-        `No snapshot entry for ${name} matching arguments ${target}`
-      );
+      throw new Error(`No snapshot entry for ${name} matching arguments ${target}`);
     }
     return match.result;
   }
