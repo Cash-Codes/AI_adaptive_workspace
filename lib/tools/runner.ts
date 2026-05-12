@@ -21,6 +21,10 @@ export class ToolRunner {
     this.ctx = config.ctx;
   }
 
+  get tools(): Tool[] {
+    return Array.from(this.toolsByName.values());
+  }
+
   async run(name: string, rawArgs: unknown): Promise<unknown> {
     const tool = this.toolsByName.get(name);
     if (!tool) {
