@@ -92,18 +92,20 @@ export class WorkflowOrchestrator {
       };
       const requestHash = hashCanonical(request);
 
-      const startedAt = Date.now();
+      // Time start/end via Runtime so latency is deterministic on replay
+      // (Date.now() would be non-deterministic).
+      const startedAt = this.runtime.now();
       const response = await this.llm.complete(request);
-      const latency = Date.now() - startedAt;
+      const endedAt = this.runtime.now();
 
       const llmCall: LLMCallRecord = {
         type: "llm_call",
         id: this.runtime.uuid(),
-        timestamp: this.runtime.now(),
+        timestamp: startedAt,
         request,
         request_hash: requestHash,
         response,
-        diagnostics: { latency_ms: latency },
+        diagnostics: { latency_ms: endedAt - startedAt },
       };
       events.push(llmCall);
 
