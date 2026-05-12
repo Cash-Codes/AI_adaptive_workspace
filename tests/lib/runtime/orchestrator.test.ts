@@ -5,6 +5,7 @@ import { ToolRunner } from "@/lib/tools/runner";
 import { tools as githubTools } from "@/lib/tools/registry";
 import { githubSnapshot } from "@/fixtures/github-snapshot";
 import type { LLMResponse } from "@/lib/runtime/llm-provider";
+import type { Event } from "@/lib/events";
 
 function llmCall(content: LLMResponse["content"], stop_reason = "end_turn"): LLMResponse {
   return {
@@ -159,5 +160,77 @@ describe("WorkflowOrchestrator", () => {
     if (!llmEvent || llmEvent.type !== "llm_call") throw new Error("expected llm_call");
     expect(typeof llmEvent.diagnostics?.latency_ms).toBe("number");
     expect(llmEvent.diagnostics?.latency_ms).toBeGreaterThanOrEqual(0);
+  });
+});
+
+describe("WorkflowOrchestrator.run({ initialState })", () => {
+  it("continues from a pre-built messages + events state without re-initializing", async () => {
+    const prefixEvents: Event[] = [
+      {
+        type: "decision",
+        id: "evt-d1",
+        timestamp: 1,
+        decision: "preset_decision",
+        label: "Preset",
+        reasoning: "supplied as initial state",
+      },
+    ];
+    const initialMessages = [
+      { role: "user" as const, content: "Investigate." },
+      {
+        role: "assistant" as const,
+        content: [
+          {
+            type: "tool_use" as const,
+            id: "toolu_preset",
+            name: "emit_decision",
+            input: {
+              decision: "preset_decision",
+              label: "Preset",
+              reasoning: "supplied as initial state",
+            },
+          },
+        ],
+      },
+      {
+        role: "user" as const,
+        content: [
+          {
+            type: "tool_result" as const,
+            tool_use_id: "toolu_preset",
+            content: "Decision recorded.",
+          },
+        ],
+      },
+    ];
+
+    const provider = new MockLLMProvider([llmCall([mockText("Continued from preset.")])]);
+    const orch = new WorkflowOrchestrator({
+      llm: provider,
+      toolRunner: buildRunner(),
+      model: "mock-model",
+      workflow: "test",
+    });
+
+    const run = await orch.run("Investigate.", {
+      initialState: {
+        messages: initialMessages,
+        events: prefixEvents,
+        runId: "fork-run-id",
+        createdAt: 42,
+      },
+    });
+
+    expect(run.metadata.id).toBe("fork-run-id");
+    expect(run.metadata.created_at).toBe(42);
+
+    const decisions = run.events.filter((e) => e.type === "decision");
+    expect(decisions).toHaveLength(1);
+    if (decisions[0].type !== "decision") throw new Error("expected decision");
+    expect(decisions[0].decision).toBe("preset_decision");
+
+    expect(provider.requests).toHaveLength(1);
+    const llmCallEvents = run.events.filter((e) => e.type === "llm_call");
+    expect(llmCallEvents).toHaveLength(1);
   });
 });

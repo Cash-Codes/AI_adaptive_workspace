@@ -25,6 +25,15 @@ export type WorkflowOrchestratorConfig = {
   params?: { temperature?: number; max_tokens?: number };
 };
 
+export type RunOptions = {
+  initialState?: {
+    messages: Message[];
+    events: Event[];
+    runId: string;
+    createdAt: number;
+  };
+};
+
 type ToolUseBlock = {
   type: "tool_use";
   id: string;
@@ -66,10 +75,12 @@ export class WorkflowOrchestrator {
     this.maxTokens = config.params?.max_tokens ?? 4096;
   }
 
-  async run(goal: string): Promise<Run> {
-    const events: Event[] = [];
-    const runId = this.runtime.uuid();
-    const createdAt = this.runtime.now();
+  async run(goal: string, options: RunOptions = {}): Promise<Run> {
+    const initial = options.initialState;
+
+    const events: Event[] = initial ? [...initial.events] : [];
+    const runId = initial?.runId ?? this.runtime.uuid();
+    const createdAt = initial?.createdAt ?? this.runtime.now();
 
     const system = buildSystemPrompt(this.userTools);
     const toolDefinitions: ToolDefinition[] = [
@@ -77,7 +88,7 @@ export class WorkflowOrchestrator {
       emitDecisionTool,
     ];
 
-    const messages: Message[] = [{ role: "user", content: goal }];
+    const messages: Message[] = initial ? [...initial.messages] : [{ role: "user", content: goal }];
 
     for (let i = 0; i < MAX_ITERATIONS; i++) {
       const request: LLMRequest = {
