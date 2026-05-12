@@ -18,12 +18,11 @@ describe("tool: get_recent_prs", () => {
   });
 
   it("validates input: limit is optional and numeric", () => {
-    expect(
-      getRecentPrs.inputSchema.parse({ repo: "a/b", limit: 5 })
-    ).toEqual({ repo: "a/b", limit: 5 });
-    expect(() =>
-      getRecentPrs.inputSchema.parse({ repo: "a/b", limit: "5" })
-    ).toThrow();
+    expect(getRecentPrs.inputSchema.parse({ repo: "a/b", limit: 5 })).toEqual({
+      repo: "a/b",
+      limit: 5,
+    });
+    expect(() => getRecentPrs.inputSchema.parse({ repo: "a/b", limit: "5" })).toThrow();
   });
 
   it("validates output: array of PR summaries", () => {
@@ -53,9 +52,7 @@ describe("tool: get_pr_diff", () => {
   });
 
   it("output is a string (raw diff)", () => {
-    expect(getPrDiff.outputSchema.parse("diff --git a/x b/x")).toBe(
-      "diff --git a/x b/x"
-    );
+    expect(getPrDiff.outputSchema.parse("diff --git a/x b/x")).toBe("diff --git a/x b/x");
   });
 });
 
@@ -80,14 +77,12 @@ describe("tool: get_pr_comments", () => {
 describe("tool: get_commit_history", () => {
   it("requires repo; since is optional ISO date string", () => {
     expect(() => getCommitHistory.inputSchema.parse({})).toThrow();
-    expect(
-      getCommitHistory.inputSchema.parse({ repo: "a/b" })
-    ).toEqual({ repo: "a/b" });
+    expect(getCommitHistory.inputSchema.parse({ repo: "a/b" })).toEqual({ repo: "a/b" });
     expect(
       getCommitHistory.inputSchema.parse({
         repo: "a/b",
         since: "2026-05-01T00:00:00Z",
-      })
+      }),
     ).toEqual({ repo: "a/b", since: "2026-05-01T00:00:00Z" });
   });
 

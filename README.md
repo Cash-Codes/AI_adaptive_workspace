@@ -11,6 +11,7 @@ Given the same inputs, a run replays identically. Edit a tool result or decision
 Most agent runtimes treat LLM driven workflows as black boxes - once a run completes, you can inspect logs, but you cannot reexecute, fork or systematically test alternative paths.
 
 When the agent picks the wrong path, there is no clean way to ask,
+
 - Would I get the same answer if I ran this again?
 - What if the tool had returned a different result here?
 - What if the agent had decided differently at this point?
@@ -25,6 +26,7 @@ Tracing tools (LangSmith, Helicone) record what happened but cannot reexecute or
 ## What's different
 
 Three event types, each first class:
+
 - **LLMCall** - the unit of deterministic replay. Full request and response captured, hashed for equality checks.
 - **ToolCall** - the unit of forking. Edit a recorded tool output and replay from that point.
 - **Decision** - the unit of narrative. The agent emits structured decisions; the UI renders the workflow against them.

@@ -16,10 +16,7 @@ const Commit = z.object({
 
 const Output = z.array(Commit);
 
-export const getCommitHistory: Tool<
-  z.infer<typeof Input>,
-  z.infer<typeof Output>
-> = {
+export const getCommitHistory: Tool<z.infer<typeof Input>, z.infer<typeof Output>> = {
   name: "get_commit_history",
   description:
     "List commits on the default branch, optionally filtered by `since` (ISO 8601 timestamp).",
@@ -33,14 +30,12 @@ export const getCommitHistory: Tool<
       headers: {
         Accept: "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
-        ...(ctx.githubToken
-          ? { Authorization: `Bearer ${ctx.githubToken}` }
-          : {}),
+        ...(ctx.githubToken ? { Authorization: `Bearer ${ctx.githubToken}` } : {}),
       },
     });
     if (!res.ok) {
       throw new Error(
-        `GitHub API error for get_commit_history(${input.repo}): ${res.status} ${res.statusText}`
+        `GitHub API error for get_commit_history(${input.repo}): ${res.status} ${res.statusText}`,
       );
     }
     const data = await res.json();

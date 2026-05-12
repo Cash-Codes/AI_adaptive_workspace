@@ -54,9 +54,7 @@ describe("ToolRunner", () => {
       snapshot: { echo: [{ arguments: { msg: "hi" }, result: { reply: "x" } }] },
       ctx: {},
     });
-    await expect(runner.run("echo", { msg: "miss" })).rejects.toThrow(
-      /no snapshot/i
-    );
+    await expect(runner.run("echo", { msg: "miss" })).rejects.toThrow(/no snapshot/i);
   });
 
   it("live mode calls execute and validates output", async () => {
