@@ -51,6 +51,10 @@ export class Runtime {
     if (event.kind !== expectedKind) {
       throw new Error(`Runtime replay kind mismatch: expected ${expectedKind}, got ${event.kind}`);
     }
+    // Mirror record-mode bookkeeping: track every event the runtime served so
+    // consumers (e.g. the orchestrator appending `runtime.events` to the final
+    // Run) get an identical events list across record and replay modes.
+    this.events.push(event);
     return event.value;
   }
 }
