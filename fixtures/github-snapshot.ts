@@ -50,8 +50,7 @@ export const githubSnapshot: Snapshot = {
         {
           number: 142,
           title: "Refactor user query for performance",
-          body:
-            "Inlines the user-lookup join, removes the cached prepared-statement path, and switches to a single composed SELECT. Should be faster on cold cache.",
+          body: "Inlines the user-lookup join, removes the cached prepared-statement path, and switches to a single composed SELECT. Should be faster on cold cache.",
           state: "closed",
           user: { login: "dave" },
           created_at: "2026-05-06T17:45:00Z",
@@ -91,8 +90,7 @@ export const githubSnapshot: Snapshot = {
         {
           number: 138,
           title: "Add Redis caching layer for product catalog",
-          body:
-            "Introduces a Redis-backed cache for product-catalog reads with a 5-minute TTL. Cache-miss path falls back to Postgres.",
+          body: "Introduces a Redis-backed cache for product-catalog reads with a 5-minute TTL. Cache-miss path falls back to Postgres.",
           state: "closed",
           user: { login: "carol" },
           created_at: "2026-05-04T13:15:00Z",
@@ -196,15 +194,13 @@ index 1111111..2222222 100644
         {
           id: 9001,
           user: { login: "reviewer-1" },
-          body:
-            "Removing the prepared-statement path will mean every query re-plans on Postgres. On hot paths under load this can show up as elevated p95.",
+          body: "Removing the prepared-statement path will mean every query re-plans on Postgres. On hot paths under load this can show up as elevated p95.",
           created_at: "2026-05-06T18:01:00Z",
         },
         {
           id: 9002,
           user: { login: "dave" },
-          body:
-            "Good point, but Postgres plan cache should handle it for repeated queries.",
+          body: "Good point, but Postgres plan cache should handle it for repeated queries.",
           created_at: "2026-05-06T18:30:00Z",
         },
       ],
@@ -215,8 +211,7 @@ index 1111111..2222222 100644
         {
           id: 9101,
           user: { login: "reviewer-2" },
-          body:
-            "Watch the 5-minute TTL. If catalog updates need to be visible faster, this will surface as confusing reads.",
+          body: "Watch the 5-minute TTL. If catalog updates need to be visible faster, this will surface as confusing reads.",
           created_at: "2026-05-04T13:45:00Z",
         },
         {

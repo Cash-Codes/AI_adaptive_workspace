@@ -31,11 +31,7 @@ export class JsonRunStore {
 
   async write(run: Run): Promise<void> {
     await this.ensureDir();
-    await fs.writeFile(
-      this.pathFor(run.metadata.id),
-      JSON.stringify(run, null, 2),
-      "utf8"
-    );
+    await fs.writeFile(this.pathFor(run.metadata.id), JSON.stringify(run, null, 2), "utf8");
   }
 
   async read(runId: string): Promise<Run> {
