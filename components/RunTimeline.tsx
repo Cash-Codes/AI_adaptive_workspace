@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Brain } from "lucide-react";
 import type { Event } from "@/lib/events";
 import { EventCard } from "@/components/EventCard";
 
@@ -27,11 +28,41 @@ export function RunTimeline({ events, selectedEventId, runId }: Props) {
               scroll={false}
               className="block"
             >
-              <EventCard event={event} selected={isSelected} />
+              {event.type === "llm_call" ? (
+                <CompactLLMCall event={event} selected={isSelected} />
+              ) : (
+                <EventCard event={event} selected={isSelected} />
+              )}
             </Link>
           </li>
         );
       })}
     </ol>
+  );
+}
+
+function CompactLLMCall({
+  event,
+  selected,
+}: {
+  event: Extract<Event, { type: "llm_call" }>;
+  selected: boolean;
+}) {
+  return (
+    <div
+      className={[
+        "flex items-center gap-2 px-3 py-1.5 text-xs text-gray-500 transition-colors",
+        selected ? "bg-blue-50 text-gray-700" : "hover:bg-gray-50",
+      ].join(" ")}
+    >
+      <Brain className="h-3 w-3 flex-shrink-0" />
+      <span className="font-mono">{event.request.model}</span>
+      <span className="text-gray-400">·</span>
+      <span>{event.response.stop_reason}</span>
+      <span className="text-gray-400">·</span>
+      <span>
+        {event.response.usage.input_tokens}/{event.response.usage.output_tokens} tokens
+      </span>
+    </div>
   );
 }
