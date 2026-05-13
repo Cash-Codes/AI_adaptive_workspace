@@ -1,0 +1,2660 @@
+{
+  "metadata": {
+    "id": "demo-fork",
+    "created_at": 1778681548273,
+    "workflow": "github-investigation",
+    "base_run_id": "demo-run",
+    "fork_point": {
+      "event_id": "b67c6364-c2e6-4441-9bd7-323005e8df95"
+    }
+  },
+  "events": [
+    {
+      "type": "llm_call",
+      "id": "d0fca846-030d-4031-9c5b-16116b655b21",
+      "timestamp": 1778679174015,
+      "request": {
+        "model": "mock-model",
+        "system": "You are an investigation agent in the Adaptive Workspace runtime.\nYour job is to investigate a question by calling tools and explicitly declaring your decisions.\n\n# Tools available\n- get_recent_prs: List recent pull requests for a GitHub repo. Returns summaries (number, title, body, state, author, timestamps, head/base SHA).\n- get_pr_diff: Fetch the raw unified diff (`diff --git ...`) for a given pull request.\n- get_pr_comments: Fetch issue comments on a pull request (general PR discussion, not inline review comments).\n- get_commit_history: List commits on the default branch, optionally filtered by `since` (ISO 8601 timestamp).\n- emit_decision: Declare an explicit decision point in your investigation.\nCall this BEFORE fetching information that depends on a choice you just made,\nso the trace records why you went one way and not another.\nFields:\n  decision: stable machine-readable identifier (snake_case), e.g. 'investigate_prs'\n  label: short human-readable label\n  reasoning: one sentence — why this option, not the alternatives\n  alternatives: optional list of other decision identifiers you considered\n\n# How to work\n1. At each fork in your reasoning, call emit_decision BEFORE calling investigative tools.\n2. Call tools to gather evidence.\n3. Repeat: emit_decision → call tools → ...\n4. When you've reached a conclusion, output a final text message. Do not call more tools.",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Recent PRs to cash-codes/checkout-service have caused performance regressions. Investigate and identify the likely culprit."
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_1",
+                "name": "emit_decision",
+                "input": {
+                  "decision": "investigate_prs",
+                  "label": "Investigate recent PRs",
+                  "reasoning": "Most likely source of regression is recent merged code.",
+                  "alternatives": [
+                    "investigate_commits",
+                    "check_issues"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_1",
+                "content": "Decision recorded."
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_2",
+                "name": "get_recent_prs",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "limit": 20
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_2",
+                "content": "[{\"number\":145,\"title\":\"Update README badges\",\"body\":\"Add CI and coverage badges.\",\"state\":\"closed\",\"user\":{\"login\":\"alice\"},\"created_at\":\"2026-05-08T10:00:00Z\",\"head\":{\"sha\":\"sha-145\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":144,\"title\":\"Bump dependencies\",\"body\":\"Routine dependency bumps; no functional changes.\",\"state\":\"closed\",\"user\":{\"login\":\"bob\"},\"created_at\":\"2026-05-07T14:32:00Z\",\"head\":{\"sha\":\"sha-144\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":143,\"title\":\"Fix typo in checkout error message\",\"body\":\"Trivial copy fix.\",\"state\":\"closed\",\"user\":{\"login\":\"carol\"},\"created_at\":\"2026-05-07T09:11:00Z\",\"head\":{\"sha\":\"sha-143\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":142,\"title\":\"Refactor user query for performance\",\"body\":\"Inlines the user-lookup join, removes the cached prepared-statement path, and switches to a single composed SELECT. Should be faster on cold cache.\",\"state\":\"closed\",\"user\":{\"login\":\"dave\"},\"created_at\":\"2026-05-06T17:45:00Z\",\"head\":{\"sha\":\"sha-142\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":141,\"title\":\"Refactor order processing pipeline\",\"body\":\"Splits the order-processing module into smaller services.\",\"state\":\"closed\",\"user\":{\"login\":\"eve\"},\"created_at\":\"2026-05-06T11:20:00Z\",\"head\":{\"sha\":\"sha-141\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":140,\"title\":\"Add metrics dashboard config\",\"body\":\"Adds Grafana dashboard JSON for tracking p95 latency.\",\"state\":\"closed\",\"user\":{\"login\":\"alice\"},\"created_at\":\"2026-05-05T16:00:00Z\",\"head\":{\"sha\":\"sha-140\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":139,\"title\":\"Remove dead code in legacy adapter\",\"body\":\"Deletes unused fallback path.\",\"state\":\"closed\",\"user\":{\"login\":\"bob\"},\"created_at\":\"2026-05-05T10:00:00Z\",\"head\":{\"sha\":\"sha-139\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":138,\"title\":\"Add Redis caching layer for product catalog\",\"body\":\"Introduces a Redis-backed cache for product-catalog reads with a 5-minute TTL. Cache-miss path falls back to Postgres.\",\"state\":\"closed\",\"user\":{\"login\":\"carol\"},\"created_at\":\"2026-05-04T13:15:00Z\",\"head\":{\"sha\":\"sha-138\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":137,\"title\":\"Update CI workflow\",\"body\":\"Bumps Node version in CI.\",\"state\":\"closed\",\"user\":{\"login\":\"dave\"},\"created_at\":\"2026-05-04T09:00:00Z\",\"head\":{\"sha\":\"sha-137\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":136,\"title\":\"Documentation updates\",\"body\":\"Misc doc improvements.\",\"state\":\"closed\",\"user\":{\"login\":\"eve\"},\"created_at\":\"2026-05-03T17:00:00Z\",\"head\":{\"sha\":\"sha-136\"},\"base\":{\"sha\":\"main-1\"}}]"
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_3",
+                "name": "get_pr_diff",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "pr_id": 142
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_3",
+                "content": "\"diff --git a/src/queries/user.ts b/src/queries/user.ts\\nindex 1a2b3c4..5d6e7f8 100644\\n--- a/src/queries/user.ts\\n+++ b/src/queries/user.ts\\n@@ -1,18 +1,12 @@\\n-import { pool, prepared } from \\\"./db\\\";\\n+import { pool } from \\\"./db\\\";\\n\\n-const getUserStmt = prepared(\\n-  \\\"SELECT u.* FROM users u WHERE u.id = $1\\\"\\n-);\\n-\\n export async function getUser(id: string) {\\n-  return getUserStmt.get(id);\\n+  const { rows } = await pool.query(\\n+    `SELECT u.id, u.email, u.created_at,\\n+            o.id AS order_id, o.total\\n+     FROM users u\\n+     LEFT JOIN orders o ON o.user_id = u.id\\n+     WHERE u.id = $1`,\\n+    [id]\\n+  );\\n+  return rows;\\n }\\n\""
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_4",
+                "name": "get_pr_comments",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "pr_id": 142
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_4",
+                "content": "[{\"id\":9001,\"user\":{\"login\":\"reviewer-1\"},\"body\":\"Removing the prepared-statement path will mean every query re-plans on Postgres. On hot paths under load this can show up as elevated p95.\",\"created_at\":\"2026-05-06T18:01:00Z\"},{\"id\":9002,\"user\":{\"login\":\"dave\"},\"body\":\"Good point, but Postgres plan cache should handle it for repeated queries.\",\"created_at\":\"2026-05-06T18:30:00Z\"}]"
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "PR #142 (Refactor user query for performance) likely caused the regression. It removes the cached prepared-statement path, forcing Postgres to re-plan every query — reviewer-1 raised exactly this concern in the PR thread."
+              }
+            ]
+          }
+        ],
+        "tools": [
+          {
+            "name": "get_recent_prs",
+            "description": "List recent pull requests for a GitHub repo. Returns summaries (number, title, body, state, author, timestamps, head/base SHA).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "limit": {
+                    "def": {
+                      "type": "optional",
+                      "innerType": {
+                        "def": {
+                          "type": "number",
+                          "checks": [
+                            {
+                              "def": {
+                                "type": "number",
+                                "check": "number_format",
+                                "abort": false,
+                                "format": "safeint"
+                              },
+                              "type": "number",
+                              "minValue": -9007199254740991,
+                              "maxValue": 9007199254740991,
+                              "isInt": true,
+                              "isFinite": true,
+                              "format": "safeint"
+                            },
+                            {}
+                          ]
+                        },
+                        "type": "number",
+                        "minValue": 0,
+                        "maxValue": 9007199254740991,
+                        "isInt": true,
+                        "isFinite": true,
+                        "format": "safeint"
+                      }
+                    },
+                    "type": "optional"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_pr_diff",
+            "description": "Fetch the raw unified diff (`diff --git ...`) for a given pull request.",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "pr_id": {
+                    "def": {
+                      "type": "number",
+                      "checks": [
+                        {
+                          "def": {
+                            "type": "number",
+                            "check": "number_format",
+                            "abort": false,
+                            "format": "safeint"
+                          },
+                          "type": "number",
+                          "minValue": -9007199254740991,
+                          "maxValue": 9007199254740991,
+                          "isInt": true,
+                          "isFinite": true,
+                          "format": "safeint"
+                        },
+                        {}
+                      ]
+                    },
+                    "type": "number",
+                    "minValue": 0,
+                    "maxValue": 9007199254740991,
+                    "isInt": true,
+                    "isFinite": true,
+                    "format": "safeint"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_pr_comments",
+            "description": "Fetch issue comments on a pull request (general PR discussion, not inline review comments).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "pr_id": {
+                    "def": {
+                      "type": "number",
+                      "checks": [
+                        {
+                          "def": {
+                            "type": "number",
+                            "check": "number_format",
+                            "abort": false,
+                            "format": "safeint"
+                          },
+                          "type": "number",
+                          "minValue": -9007199254740991,
+                          "maxValue": 9007199254740991,
+                          "isInt": true,
+                          "isFinite": true,
+                          "format": "safeint"
+                        },
+                        {}
+                      ]
+                    },
+                    "type": "number",
+                    "minValue": 0,
+                    "maxValue": 9007199254740991,
+                    "isInt": true,
+                    "isFinite": true,
+                    "format": "safeint"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_commit_history",
+            "description": "List commits on the default branch, optionally filtered by `since` (ISO 8601 timestamp).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "since": {
+                    "def": {
+                      "type": "optional",
+                      "innerType": {
+                        "def": {
+                          "type": "string"
+                        },
+                        "type": "string",
+                        "format": null,
+                        "minLength": null,
+                        "maxLength": null
+                      }
+                    },
+                    "type": "optional"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "emit_decision",
+            "description": "Declare an explicit decision point in your investigation.\nCall this BEFORE fetching information that depends on a choice you just made,\nso the trace records why you went one way and not another.\nFields:\n  decision: stable machine-readable identifier (snake_case), e.g. 'investigate_prs'\n  label: short human-readable label\n  reasoning: one sentence — why this option, not the alternatives\n  alternatives: optional list of other decision identifiers you considered",
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "decision": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "reasoning": {
+                  "type": "string"
+                },
+                "alternatives": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "decision",
+                "label",
+                "reasoning"
+              ]
+            }
+          }
+        ],
+        "params": {
+          "temperature": 0,
+          "max_tokens": 4096
+        }
+      },
+      "request_hash": "47a75057513a956c0269ed3ae33fb8ec9b0d1d7f7e33a46c7d16595002b95e69",
+      "response": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_1",
+            "name": "emit_decision",
+            "input": {
+              "decision": "investigate_prs",
+              "label": "Investigate recent PRs",
+              "reasoning": "Most likely source of regression is recent merged code.",
+              "alternatives": [
+                "investigate_commits",
+                "check_issues"
+              ]
+            }
+          }
+        ],
+        "stop_reason": "tool_use",
+        "model_served": "mock-model",
+        "request_id": "req-demo-73angqsu4vp",
+        "usage": {
+          "input_tokens": 100,
+          "output_tokens": 50
+        }
+      },
+      "diagnostics": {
+        "latency_ms": 0
+      }
+    },
+    {
+      "type": "decision",
+      "id": "92a4e6e2-264e-4855-9f17-6e48114ee829",
+      "timestamp": 1778679174015,
+      "decision": "investigate_prs",
+      "label": "Investigate recent PRs",
+      "reasoning": "Most likely source of regression is recent merged code.",
+      "alternatives": [
+        "investigate_commits",
+        "check_issues"
+      ]
+    },
+    {
+      "type": "llm_call",
+      "id": "a748fa5a-736c-4322-9552-d8a4dc2dec7f",
+      "timestamp": 1778679174016,
+      "request": {
+        "model": "mock-model",
+        "system": "You are an investigation agent in the Adaptive Workspace runtime.\nYour job is to investigate a question by calling tools and explicitly declaring your decisions.\n\n# Tools available\n- get_recent_prs: List recent pull requests for a GitHub repo. Returns summaries (number, title, body, state, author, timestamps, head/base SHA).\n- get_pr_diff: Fetch the raw unified diff (`diff --git ...`) for a given pull request.\n- get_pr_comments: Fetch issue comments on a pull request (general PR discussion, not inline review comments).\n- get_commit_history: List commits on the default branch, optionally filtered by `since` (ISO 8601 timestamp).\n- emit_decision: Declare an explicit decision point in your investigation.\nCall this BEFORE fetching information that depends on a choice you just made,\nso the trace records why you went one way and not another.\nFields:\n  decision: stable machine-readable identifier (snake_case), e.g. 'investigate_prs'\n  label: short human-readable label\n  reasoning: one sentence — why this option, not the alternatives\n  alternatives: optional list of other decision identifiers you considered\n\n# How to work\n1. At each fork in your reasoning, call emit_decision BEFORE calling investigative tools.\n2. Call tools to gather evidence.\n3. Repeat: emit_decision → call tools → ...\n4. When you've reached a conclusion, output a final text message. Do not call more tools.",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Recent PRs to cash-codes/checkout-service have caused performance regressions. Investigate and identify the likely culprit."
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_1",
+                "name": "emit_decision",
+                "input": {
+                  "decision": "investigate_prs",
+                  "label": "Investigate recent PRs",
+                  "reasoning": "Most likely source of regression is recent merged code.",
+                  "alternatives": [
+                    "investigate_commits",
+                    "check_issues"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_1",
+                "content": "Decision recorded."
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_2",
+                "name": "get_recent_prs",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "limit": 20
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_2",
+                "content": "[{\"number\":145,\"title\":\"Update README badges\",\"body\":\"Add CI and coverage badges.\",\"state\":\"closed\",\"user\":{\"login\":\"alice\"},\"created_at\":\"2026-05-08T10:00:00Z\",\"head\":{\"sha\":\"sha-145\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":144,\"title\":\"Bump dependencies\",\"body\":\"Routine dependency bumps; no functional changes.\",\"state\":\"closed\",\"user\":{\"login\":\"bob\"},\"created_at\":\"2026-05-07T14:32:00Z\",\"head\":{\"sha\":\"sha-144\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":143,\"title\":\"Fix typo in checkout error message\",\"body\":\"Trivial copy fix.\",\"state\":\"closed\",\"user\":{\"login\":\"carol\"},\"created_at\":\"2026-05-07T09:11:00Z\",\"head\":{\"sha\":\"sha-143\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":142,\"title\":\"Refactor user query for performance\",\"body\":\"Inlines the user-lookup join, removes the cached prepared-statement path, and switches to a single composed SELECT. Should be faster on cold cache.\",\"state\":\"closed\",\"user\":{\"login\":\"dave\"},\"created_at\":\"2026-05-06T17:45:00Z\",\"head\":{\"sha\":\"sha-142\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":141,\"title\":\"Refactor order processing pipeline\",\"body\":\"Splits the order-processing module into smaller services.\",\"state\":\"closed\",\"user\":{\"login\":\"eve\"},\"created_at\":\"2026-05-06T11:20:00Z\",\"head\":{\"sha\":\"sha-141\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":140,\"title\":\"Add metrics dashboard config\",\"body\":\"Adds Grafana dashboard JSON for tracking p95 latency.\",\"state\":\"closed\",\"user\":{\"login\":\"alice\"},\"created_at\":\"2026-05-05T16:00:00Z\",\"head\":{\"sha\":\"sha-140\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":139,\"title\":\"Remove dead code in legacy adapter\",\"body\":\"Deletes unused fallback path.\",\"state\":\"closed\",\"user\":{\"login\":\"bob\"},\"created_at\":\"2026-05-05T10:00:00Z\",\"head\":{\"sha\":\"sha-139\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":138,\"title\":\"Add Redis caching layer for product catalog\",\"body\":\"Introduces a Redis-backed cache for product-catalog reads with a 5-minute TTL. Cache-miss path falls back to Postgres.\",\"state\":\"closed\",\"user\":{\"login\":\"carol\"},\"created_at\":\"2026-05-04T13:15:00Z\",\"head\":{\"sha\":\"sha-138\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":137,\"title\":\"Update CI workflow\",\"body\":\"Bumps Node version in CI.\",\"state\":\"closed\",\"user\":{\"login\":\"dave\"},\"created_at\":\"2026-05-04T09:00:00Z\",\"head\":{\"sha\":\"sha-137\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":136,\"title\":\"Documentation updates\",\"body\":\"Misc doc improvements.\",\"state\":\"closed\",\"user\":{\"login\":\"eve\"},\"created_at\":\"2026-05-03T17:00:00Z\",\"head\":{\"sha\":\"sha-136\"},\"base\":{\"sha\":\"main-1\"}}]"
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_3",
+                "name": "get_pr_diff",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "pr_id": 142
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_3",
+                "content": "\"diff --git a/src/queries/user.ts b/src/queries/user.ts\\nindex 1a2b3c4..5d6e7f8 100644\\n--- a/src/queries/user.ts\\n+++ b/src/queries/user.ts\\n@@ -1,18 +1,12 @@\\n-import { pool, prepared } from \\\"./db\\\";\\n+import { pool } from \\\"./db\\\";\\n\\n-const getUserStmt = prepared(\\n-  \\\"SELECT u.* FROM users u WHERE u.id = $1\\\"\\n-);\\n-\\n export async function getUser(id: string) {\\n-  return getUserStmt.get(id);\\n+  const { rows } = await pool.query(\\n+    `SELECT u.id, u.email, u.created_at,\\n+            o.id AS order_id, o.total\\n+     FROM users u\\n+     LEFT JOIN orders o ON o.user_id = u.id\\n+     WHERE u.id = $1`,\\n+    [id]\\n+  );\\n+  return rows;\\n }\\n\""
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_4",
+                "name": "get_pr_comments",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "pr_id": 142
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_4",
+                "content": "[{\"id\":9001,\"user\":{\"login\":\"reviewer-1\"},\"body\":\"Removing the prepared-statement path will mean every query re-plans on Postgres. On hot paths under load this can show up as elevated p95.\",\"created_at\":\"2026-05-06T18:01:00Z\"},{\"id\":9002,\"user\":{\"login\":\"dave\"},\"body\":\"Good point, but Postgres plan cache should handle it for repeated queries.\",\"created_at\":\"2026-05-06T18:30:00Z\"}]"
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "PR #142 (Refactor user query for performance) likely caused the regression. It removes the cached prepared-statement path, forcing Postgres to re-plan every query — reviewer-1 raised exactly this concern in the PR thread."
+              }
+            ]
+          }
+        ],
+        "tools": [
+          {
+            "name": "get_recent_prs",
+            "description": "List recent pull requests for a GitHub repo. Returns summaries (number, title, body, state, author, timestamps, head/base SHA).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "limit": {
+                    "def": {
+                      "type": "optional",
+                      "innerType": {
+                        "def": {
+                          "type": "number",
+                          "checks": [
+                            {
+                              "def": {
+                                "type": "number",
+                                "check": "number_format",
+                                "abort": false,
+                                "format": "safeint"
+                              },
+                              "type": "number",
+                              "minValue": -9007199254740991,
+                              "maxValue": 9007199254740991,
+                              "isInt": true,
+                              "isFinite": true,
+                              "format": "safeint"
+                            },
+                            {}
+                          ]
+                        },
+                        "type": "number",
+                        "minValue": 0,
+                        "maxValue": 9007199254740991,
+                        "isInt": true,
+                        "isFinite": true,
+                        "format": "safeint"
+                      }
+                    },
+                    "type": "optional"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_pr_diff",
+            "description": "Fetch the raw unified diff (`diff --git ...`) for a given pull request.",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "pr_id": {
+                    "def": {
+                      "type": "number",
+                      "checks": [
+                        {
+                          "def": {
+                            "type": "number",
+                            "check": "number_format",
+                            "abort": false,
+                            "format": "safeint"
+                          },
+                          "type": "number",
+                          "minValue": -9007199254740991,
+                          "maxValue": 9007199254740991,
+                          "isInt": true,
+                          "isFinite": true,
+                          "format": "safeint"
+                        },
+                        {}
+                      ]
+                    },
+                    "type": "number",
+                    "minValue": 0,
+                    "maxValue": 9007199254740991,
+                    "isInt": true,
+                    "isFinite": true,
+                    "format": "safeint"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_pr_comments",
+            "description": "Fetch issue comments on a pull request (general PR discussion, not inline review comments).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "pr_id": {
+                    "def": {
+                      "type": "number",
+                      "checks": [
+                        {
+                          "def": {
+                            "type": "number",
+                            "check": "number_format",
+                            "abort": false,
+                            "format": "safeint"
+                          },
+                          "type": "number",
+                          "minValue": -9007199254740991,
+                          "maxValue": 9007199254740991,
+                          "isInt": true,
+                          "isFinite": true,
+                          "format": "safeint"
+                        },
+                        {}
+                      ]
+                    },
+                    "type": "number",
+                    "minValue": 0,
+                    "maxValue": 9007199254740991,
+                    "isInt": true,
+                    "isFinite": true,
+                    "format": "safeint"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_commit_history",
+            "description": "List commits on the default branch, optionally filtered by `since` (ISO 8601 timestamp).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "since": {
+                    "def": {
+                      "type": "optional",
+                      "innerType": {
+                        "def": {
+                          "type": "string"
+                        },
+                        "type": "string",
+                        "format": null,
+                        "minLength": null,
+                        "maxLength": null
+                      }
+                    },
+                    "type": "optional"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "emit_decision",
+            "description": "Declare an explicit decision point in your investigation.\nCall this BEFORE fetching information that depends on a choice you just made,\nso the trace records why you went one way and not another.\nFields:\n  decision: stable machine-readable identifier (snake_case), e.g. 'investigate_prs'\n  label: short human-readable label\n  reasoning: one sentence — why this option, not the alternatives\n  alternatives: optional list of other decision identifiers you considered",
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "decision": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "reasoning": {
+                  "type": "string"
+                },
+                "alternatives": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "decision",
+                "label",
+                "reasoning"
+              ]
+            }
+          }
+        ],
+        "params": {
+          "temperature": 0,
+          "max_tokens": 4096
+        }
+      },
+      "request_hash": "733a6f58eb02ca21855b47ceac84cbccc0504acb07856527f59f4fd0d20f6b56",
+      "response": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_2",
+            "name": "get_recent_prs",
+            "input": {
+              "repo": "cash-codes/checkout-service",
+              "limit": 20
+            }
+          }
+        ],
+        "stop_reason": "tool_use",
+        "model_served": "mock-model",
+        "request_id": "req-demo-eavnesr5o0n",
+        "usage": {
+          "input_tokens": 100,
+          "output_tokens": 50
+        }
+      },
+      "diagnostics": {
+        "latency_ms": 0
+      }
+    },
+    {
+      "type": "tool_call",
+      "id": "ba9fbe9d-6044-4d75-85de-d7da4045c8d3",
+      "timestamp": 1778679174019,
+      "tool": "get_recent_prs",
+      "arguments": {
+        "repo": "cash-codes/checkout-service",
+        "limit": 20
+      },
+      "arguments_hash": "0ef73b742c9df04038fef6bdc2a9f47df9d5f79005fdee819fd674149d1199e3",
+      "result": {
+        "output": [
+          {
+            "number": 145,
+            "title": "Update README badges",
+            "body": "Add CI and coverage badges.",
+            "state": "closed",
+            "user": {
+              "login": "alice"
+            },
+            "created_at": "2026-05-08T10:00:00Z",
+            "head": {
+              "sha": "sha-145"
+            },
+            "base": {
+              "sha": "main-1"
+            }
+          },
+          {
+            "number": 144,
+            "title": "Bump dependencies",
+            "body": "Routine dependency bumps; no functional changes.",
+            "state": "closed",
+            "user": {
+              "login": "bob"
+            },
+            "created_at": "2026-05-07T14:32:00Z",
+            "head": {
+              "sha": "sha-144"
+            },
+            "base": {
+              "sha": "main-1"
+            }
+          },
+          {
+            "number": 143,
+            "title": "Fix typo in checkout error message",
+            "body": "Trivial copy fix.",
+            "state": "closed",
+            "user": {
+              "login": "carol"
+            },
+            "created_at": "2026-05-07T09:11:00Z",
+            "head": {
+              "sha": "sha-143"
+            },
+            "base": {
+              "sha": "main-1"
+            }
+          },
+          {
+            "number": 142,
+            "title": "Refactor user query for performance",
+            "body": "Inlines the user-lookup join, removes the cached prepared-statement path, and switches to a single composed SELECT. Should be faster on cold cache.",
+            "state": "closed",
+            "user": {
+              "login": "dave"
+            },
+            "created_at": "2026-05-06T17:45:00Z",
+            "head": {
+              "sha": "sha-142"
+            },
+            "base": {
+              "sha": "main-1"
+            }
+          },
+          {
+            "number": 141,
+            "title": "Refactor order processing pipeline",
+            "body": "Splits the order-processing module into smaller services.",
+            "state": "closed",
+            "user": {
+              "login": "eve"
+            },
+            "created_at": "2026-05-06T11:20:00Z",
+            "head": {
+              "sha": "sha-141"
+            },
+            "base": {
+              "sha": "main-1"
+            }
+          },
+          {
+            "number": 140,
+            "title": "Add metrics dashboard config",
+            "body": "Adds Grafana dashboard JSON for tracking p95 latency.",
+            "state": "closed",
+            "user": {
+              "login": "alice"
+            },
+            "created_at": "2026-05-05T16:00:00Z",
+            "head": {
+              "sha": "sha-140"
+            },
+            "base": {
+              "sha": "main-1"
+            }
+          },
+          {
+            "number": 139,
+            "title": "Remove dead code in legacy adapter",
+            "body": "Deletes unused fallback path.",
+            "state": "closed",
+            "user": {
+              "login": "bob"
+            },
+            "created_at": "2026-05-05T10:00:00Z",
+            "head": {
+              "sha": "sha-139"
+            },
+            "base": {
+              "sha": "main-1"
+            }
+          },
+          {
+            "number": 138,
+            "title": "Add Redis caching layer for product catalog",
+            "body": "Introduces a Redis-backed cache for product-catalog reads with a 5-minute TTL. Cache-miss path falls back to Postgres.",
+            "state": "closed",
+            "user": {
+              "login": "carol"
+            },
+            "created_at": "2026-05-04T13:15:00Z",
+            "head": {
+              "sha": "sha-138"
+            },
+            "base": {
+              "sha": "main-1"
+            }
+          },
+          {
+            "number": 137,
+            "title": "Update CI workflow",
+            "body": "Bumps Node version in CI.",
+            "state": "closed",
+            "user": {
+              "login": "dave"
+            },
+            "created_at": "2026-05-04T09:00:00Z",
+            "head": {
+              "sha": "sha-137"
+            },
+            "base": {
+              "sha": "main-1"
+            }
+          },
+          {
+            "number": 136,
+            "title": "Documentation updates",
+            "body": "Misc doc improvements.",
+            "state": "closed",
+            "user": {
+              "login": "eve"
+            },
+            "created_at": "2026-05-03T17:00:00Z",
+            "head": {
+              "sha": "sha-136"
+            },
+            "base": {
+              "sha": "main-1"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "llm_call",
+      "id": "b4c70cd8-5c7b-4639-b5a0-d5f779b26892",
+      "timestamp": 1778679174019,
+      "request": {
+        "model": "mock-model",
+        "system": "You are an investigation agent in the Adaptive Workspace runtime.\nYour job is to investigate a question by calling tools and explicitly declaring your decisions.\n\n# Tools available\n- get_recent_prs: List recent pull requests for a GitHub repo. Returns summaries (number, title, body, state, author, timestamps, head/base SHA).\n- get_pr_diff: Fetch the raw unified diff (`diff --git ...`) for a given pull request.\n- get_pr_comments: Fetch issue comments on a pull request (general PR discussion, not inline review comments).\n- get_commit_history: List commits on the default branch, optionally filtered by `since` (ISO 8601 timestamp).\n- emit_decision: Declare an explicit decision point in your investigation.\nCall this BEFORE fetching information that depends on a choice you just made,\nso the trace records why you went one way and not another.\nFields:\n  decision: stable machine-readable identifier (snake_case), e.g. 'investigate_prs'\n  label: short human-readable label\n  reasoning: one sentence — why this option, not the alternatives\n  alternatives: optional list of other decision identifiers you considered\n\n# How to work\n1. At each fork in your reasoning, call emit_decision BEFORE calling investigative tools.\n2. Call tools to gather evidence.\n3. Repeat: emit_decision → call tools → ...\n4. When you've reached a conclusion, output a final text message. Do not call more tools.",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Recent PRs to cash-codes/checkout-service have caused performance regressions. Investigate and identify the likely culprit."
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_1",
+                "name": "emit_decision",
+                "input": {
+                  "decision": "investigate_prs",
+                  "label": "Investigate recent PRs",
+                  "reasoning": "Most likely source of regression is recent merged code.",
+                  "alternatives": [
+                    "investigate_commits",
+                    "check_issues"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_1",
+                "content": "Decision recorded."
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_2",
+                "name": "get_recent_prs",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "limit": 20
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_2",
+                "content": "[{\"number\":145,\"title\":\"Update README badges\",\"body\":\"Add CI and coverage badges.\",\"state\":\"closed\",\"user\":{\"login\":\"alice\"},\"created_at\":\"2026-05-08T10:00:00Z\",\"head\":{\"sha\":\"sha-145\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":144,\"title\":\"Bump dependencies\",\"body\":\"Routine dependency bumps; no functional changes.\",\"state\":\"closed\",\"user\":{\"login\":\"bob\"},\"created_at\":\"2026-05-07T14:32:00Z\",\"head\":{\"sha\":\"sha-144\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":143,\"title\":\"Fix typo in checkout error message\",\"body\":\"Trivial copy fix.\",\"state\":\"closed\",\"user\":{\"login\":\"carol\"},\"created_at\":\"2026-05-07T09:11:00Z\",\"head\":{\"sha\":\"sha-143\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":142,\"title\":\"Refactor user query for performance\",\"body\":\"Inlines the user-lookup join, removes the cached prepared-statement path, and switches to a single composed SELECT. Should be faster on cold cache.\",\"state\":\"closed\",\"user\":{\"login\":\"dave\"},\"created_at\":\"2026-05-06T17:45:00Z\",\"head\":{\"sha\":\"sha-142\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":141,\"title\":\"Refactor order processing pipeline\",\"body\":\"Splits the order-processing module into smaller services.\",\"state\":\"closed\",\"user\":{\"login\":\"eve\"},\"created_at\":\"2026-05-06T11:20:00Z\",\"head\":{\"sha\":\"sha-141\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":140,\"title\":\"Add metrics dashboard config\",\"body\":\"Adds Grafana dashboard JSON for tracking p95 latency.\",\"state\":\"closed\",\"user\":{\"login\":\"alice\"},\"created_at\":\"2026-05-05T16:00:00Z\",\"head\":{\"sha\":\"sha-140\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":139,\"title\":\"Remove dead code in legacy adapter\",\"body\":\"Deletes unused fallback path.\",\"state\":\"closed\",\"user\":{\"login\":\"bob\"},\"created_at\":\"2026-05-05T10:00:00Z\",\"head\":{\"sha\":\"sha-139\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":138,\"title\":\"Add Redis caching layer for product catalog\",\"body\":\"Introduces a Redis-backed cache for product-catalog reads with a 5-minute TTL. Cache-miss path falls back to Postgres.\",\"state\":\"closed\",\"user\":{\"login\":\"carol\"},\"created_at\":\"2026-05-04T13:15:00Z\",\"head\":{\"sha\":\"sha-138\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":137,\"title\":\"Update CI workflow\",\"body\":\"Bumps Node version in CI.\",\"state\":\"closed\",\"user\":{\"login\":\"dave\"},\"created_at\":\"2026-05-04T09:00:00Z\",\"head\":{\"sha\":\"sha-137\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":136,\"title\":\"Documentation updates\",\"body\":\"Misc doc improvements.\",\"state\":\"closed\",\"user\":{\"login\":\"eve\"},\"created_at\":\"2026-05-03T17:00:00Z\",\"head\":{\"sha\":\"sha-136\"},\"base\":{\"sha\":\"main-1\"}}]"
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_3",
+                "name": "get_pr_diff",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "pr_id": 142
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_3",
+                "content": "\"diff --git a/src/queries/user.ts b/src/queries/user.ts\\nindex 1a2b3c4..5d6e7f8 100644\\n--- a/src/queries/user.ts\\n+++ b/src/queries/user.ts\\n@@ -1,18 +1,12 @@\\n-import { pool, prepared } from \\\"./db\\\";\\n+import { pool } from \\\"./db\\\";\\n\\n-const getUserStmt = prepared(\\n-  \\\"SELECT u.* FROM users u WHERE u.id = $1\\\"\\n-);\\n-\\n export async function getUser(id: string) {\\n-  return getUserStmt.get(id);\\n+  const { rows } = await pool.query(\\n+    `SELECT u.id, u.email, u.created_at,\\n+            o.id AS order_id, o.total\\n+     FROM users u\\n+     LEFT JOIN orders o ON o.user_id = u.id\\n+     WHERE u.id = $1`,\\n+    [id]\\n+  );\\n+  return rows;\\n }\\n\""
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_4",
+                "name": "get_pr_comments",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "pr_id": 142
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_4",
+                "content": "[{\"id\":9001,\"user\":{\"login\":\"reviewer-1\"},\"body\":\"Removing the prepared-statement path will mean every query re-plans on Postgres. On hot paths under load this can show up as elevated p95.\",\"created_at\":\"2026-05-06T18:01:00Z\"},{\"id\":9002,\"user\":{\"login\":\"dave\"},\"body\":\"Good point, but Postgres plan cache should handle it for repeated queries.\",\"created_at\":\"2026-05-06T18:30:00Z\"}]"
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "PR #142 (Refactor user query for performance) likely caused the regression. It removes the cached prepared-statement path, forcing Postgres to re-plan every query — reviewer-1 raised exactly this concern in the PR thread."
+              }
+            ]
+          }
+        ],
+        "tools": [
+          {
+            "name": "get_recent_prs",
+            "description": "List recent pull requests for a GitHub repo. Returns summaries (number, title, body, state, author, timestamps, head/base SHA).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "limit": {
+                    "def": {
+                      "type": "optional",
+                      "innerType": {
+                        "def": {
+                          "type": "number",
+                          "checks": [
+                            {
+                              "def": {
+                                "type": "number",
+                                "check": "number_format",
+                                "abort": false,
+                                "format": "safeint"
+                              },
+                              "type": "number",
+                              "minValue": -9007199254740991,
+                              "maxValue": 9007199254740991,
+                              "isInt": true,
+                              "isFinite": true,
+                              "format": "safeint"
+                            },
+                            {}
+                          ]
+                        },
+                        "type": "number",
+                        "minValue": 0,
+                        "maxValue": 9007199254740991,
+                        "isInt": true,
+                        "isFinite": true,
+                        "format": "safeint"
+                      }
+                    },
+                    "type": "optional"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_pr_diff",
+            "description": "Fetch the raw unified diff (`diff --git ...`) for a given pull request.",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "pr_id": {
+                    "def": {
+                      "type": "number",
+                      "checks": [
+                        {
+                          "def": {
+                            "type": "number",
+                            "check": "number_format",
+                            "abort": false,
+                            "format": "safeint"
+                          },
+                          "type": "number",
+                          "minValue": -9007199254740991,
+                          "maxValue": 9007199254740991,
+                          "isInt": true,
+                          "isFinite": true,
+                          "format": "safeint"
+                        },
+                        {}
+                      ]
+                    },
+                    "type": "number",
+                    "minValue": 0,
+                    "maxValue": 9007199254740991,
+                    "isInt": true,
+                    "isFinite": true,
+                    "format": "safeint"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_pr_comments",
+            "description": "Fetch issue comments on a pull request (general PR discussion, not inline review comments).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "pr_id": {
+                    "def": {
+                      "type": "number",
+                      "checks": [
+                        {
+                          "def": {
+                            "type": "number",
+                            "check": "number_format",
+                            "abort": false,
+                            "format": "safeint"
+                          },
+                          "type": "number",
+                          "minValue": -9007199254740991,
+                          "maxValue": 9007199254740991,
+                          "isInt": true,
+                          "isFinite": true,
+                          "format": "safeint"
+                        },
+                        {}
+                      ]
+                    },
+                    "type": "number",
+                    "minValue": 0,
+                    "maxValue": 9007199254740991,
+                    "isInt": true,
+                    "isFinite": true,
+                    "format": "safeint"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_commit_history",
+            "description": "List commits on the default branch, optionally filtered by `since` (ISO 8601 timestamp).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "since": {
+                    "def": {
+                      "type": "optional",
+                      "innerType": {
+                        "def": {
+                          "type": "string"
+                        },
+                        "type": "string",
+                        "format": null,
+                        "minLength": null,
+                        "maxLength": null
+                      }
+                    },
+                    "type": "optional"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "emit_decision",
+            "description": "Declare an explicit decision point in your investigation.\nCall this BEFORE fetching information that depends on a choice you just made,\nso the trace records why you went one way and not another.\nFields:\n  decision: stable machine-readable identifier (snake_case), e.g. 'investigate_prs'\n  label: short human-readable label\n  reasoning: one sentence — why this option, not the alternatives\n  alternatives: optional list of other decision identifiers you considered",
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "decision": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "reasoning": {
+                  "type": "string"
+                },
+                "alternatives": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "decision",
+                "label",
+                "reasoning"
+              ]
+            }
+          }
+        ],
+        "params": {
+          "temperature": 0,
+          "max_tokens": 4096
+        }
+      },
+      "request_hash": "02d66febd7aa859fdfdb8fd1de71bd1b910d17db3033f543ab452db9d944e851",
+      "response": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_3",
+            "name": "get_pr_diff",
+            "input": {
+              "repo": "cash-codes/checkout-service",
+              "pr_id": 142
+            }
+          }
+        ],
+        "stop_reason": "tool_use",
+        "model_served": "mock-model",
+        "request_id": "req-demo-jxdpdwr88bb",
+        "usage": {
+          "input_tokens": 100,
+          "output_tokens": 50
+        }
+      },
+      "diagnostics": {
+        "latency_ms": 0
+      }
+    },
+    {
+      "type": "tool_call",
+      "id": "b67c6364-c2e6-4441-9bd7-323005e8df95",
+      "timestamp": 1778679174019,
+      "tool": "get_pr_diff",
+      "arguments": {
+        "repo": "cash-codes/checkout-service",
+        "pr_id": 142
+      },
+      "arguments_hash": "706eeda00c3d00a321dd33b5eadc3bf2da1ae55408236d022282536c48caaf42",
+      "result": {
+        "output": "diff --git a/src/queries/user.ts b/src/queries/user.ts\n(benign: rename only, no semantic change)\n"
+      }
+    },
+    {
+      "type": "llm_call",
+      "id": "6b66840e-1c59-4b9e-b1f8-a95a86125313",
+      "timestamp": 1778681548274,
+      "request": {
+        "model": "mock-model",
+        "system": "You are an investigation agent in the Adaptive Workspace runtime.\nYour job is to investigate a question by calling tools and explicitly declaring your decisions.\n\n# Tools available\n- get_recent_prs: List recent pull requests for a GitHub repo. Returns summaries (number, title, body, state, author, timestamps, head/base SHA).\n- get_pr_diff: Fetch the raw unified diff (`diff --git ...`) for a given pull request.\n- get_pr_comments: Fetch issue comments on a pull request (general PR discussion, not inline review comments).\n- get_commit_history: List commits on the default branch, optionally filtered by `since` (ISO 8601 timestamp).\n- emit_decision: Declare an explicit decision point in your investigation.\nCall this BEFORE fetching information that depends on a choice you just made,\nso the trace records why you went one way and not another.\nFields:\n  decision: stable machine-readable identifier (snake_case), e.g. 'investigate_prs'\n  label: short human-readable label\n  reasoning: one sentence — why this option, not the alternatives\n  alternatives: optional list of other decision identifiers you considered\n\n# How to work\n1. At each fork in your reasoning, call emit_decision BEFORE calling investigative tools.\n2. Call tools to gather evidence.\n3. Repeat: emit_decision → call tools → ...\n4. When you've reached a conclusion, output a final text message. Do not call more tools.",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Recent PRs to cash-codes/checkout-service have caused performance regressions. Investigate and identify the likely culprit."
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_1",
+                "name": "emit_decision",
+                "input": {
+                  "decision": "investigate_prs",
+                  "label": "Investigate recent PRs",
+                  "reasoning": "Most likely source of regression is recent merged code.",
+                  "alternatives": [
+                    "investigate_commits",
+                    "check_issues"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_1",
+                "content": "Decision recorded."
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_2",
+                "name": "get_recent_prs",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "limit": 20
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_2",
+                "content": "[{\"number\":145,\"title\":\"Update README badges\",\"body\":\"Add CI and coverage badges.\",\"state\":\"closed\",\"user\":{\"login\":\"alice\"},\"created_at\":\"2026-05-08T10:00:00Z\",\"head\":{\"sha\":\"sha-145\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":144,\"title\":\"Bump dependencies\",\"body\":\"Routine dependency bumps; no functional changes.\",\"state\":\"closed\",\"user\":{\"login\":\"bob\"},\"created_at\":\"2026-05-07T14:32:00Z\",\"head\":{\"sha\":\"sha-144\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":143,\"title\":\"Fix typo in checkout error message\",\"body\":\"Trivial copy fix.\",\"state\":\"closed\",\"user\":{\"login\":\"carol\"},\"created_at\":\"2026-05-07T09:11:00Z\",\"head\":{\"sha\":\"sha-143\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":142,\"title\":\"Refactor user query for performance\",\"body\":\"Inlines the user-lookup join, removes the cached prepared-statement path, and switches to a single composed SELECT. Should be faster on cold cache.\",\"state\":\"closed\",\"user\":{\"login\":\"dave\"},\"created_at\":\"2026-05-06T17:45:00Z\",\"head\":{\"sha\":\"sha-142\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":141,\"title\":\"Refactor order processing pipeline\",\"body\":\"Splits the order-processing module into smaller services.\",\"state\":\"closed\",\"user\":{\"login\":\"eve\"},\"created_at\":\"2026-05-06T11:20:00Z\",\"head\":{\"sha\":\"sha-141\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":140,\"title\":\"Add metrics dashboard config\",\"body\":\"Adds Grafana dashboard JSON for tracking p95 latency.\",\"state\":\"closed\",\"user\":{\"login\":\"alice\"},\"created_at\":\"2026-05-05T16:00:00Z\",\"head\":{\"sha\":\"sha-140\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":139,\"title\":\"Remove dead code in legacy adapter\",\"body\":\"Deletes unused fallback path.\",\"state\":\"closed\",\"user\":{\"login\":\"bob\"},\"created_at\":\"2026-05-05T10:00:00Z\",\"head\":{\"sha\":\"sha-139\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":138,\"title\":\"Add Redis caching layer for product catalog\",\"body\":\"Introduces a Redis-backed cache for product-catalog reads with a 5-minute TTL. Cache-miss path falls back to Postgres.\",\"state\":\"closed\",\"user\":{\"login\":\"carol\"},\"created_at\":\"2026-05-04T13:15:00Z\",\"head\":{\"sha\":\"sha-138\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":137,\"title\":\"Update CI workflow\",\"body\":\"Bumps Node version in CI.\",\"state\":\"closed\",\"user\":{\"login\":\"dave\"},\"created_at\":\"2026-05-04T09:00:00Z\",\"head\":{\"sha\":\"sha-137\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":136,\"title\":\"Documentation updates\",\"body\":\"Misc doc improvements.\",\"state\":\"closed\",\"user\":{\"login\":\"eve\"},\"created_at\":\"2026-05-03T17:00:00Z\",\"head\":{\"sha\":\"sha-136\"},\"base\":{\"sha\":\"main-1\"}}]"
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_3",
+                "name": "get_pr_diff",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "pr_id": 142
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_3",
+                "content": "\"diff --git a/src/queries/user.ts b/src/queries/user.ts\\n(benign: rename only, no semantic change)\\n\""
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_fork_1",
+                "name": "get_pr_diff",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "pr_id": 138
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_fork_1",
+                "content": "\"diff --git a/src/cache/catalog.ts b/src/cache/catalog.ts\\nnew file mode 100644\\nindex 0000000..a1b2c3d\\n--- /dev/null\\n+++ b/src/cache/catalog.ts\\n@@ -0,0 +1,24 @@\\n+import { redis } from \\\"../redis\\\";\\n+import { fetchCatalogFromDb } from \\\"../db/catalog\\\";\\n+\\n+const TTL_SECONDS = 300;\\n+\\n+export async function getCatalog(key: string) {\\n+  const cached = await redis.get(`catalog:${key}`);\\n+  if (cached) return JSON.parse(cached);\\n+  const fresh = await fetchCatalogFromDb(key);\\n+  await redis.setex(`catalog:${key}`, TTL_SECONDS, JSON.stringify(fresh));\\n+  return fresh;\\n+}\\n\""
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_fork_2",
+                "name": "get_pr_comments",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "pr_id": 138
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_fork_2",
+                "content": "[{\"id\":9101,\"user\":{\"login\":\"reviewer-2\"},\"body\":\"Watch the 5-minute TTL. If catalog updates need to be visible faster, this will surface as confusing reads.\",\"created_at\":\"2026-05-04T13:45:00Z\"},{\"id\":9102,\"user\":{\"login\":\"carol\"},\"body\":\"Acknowledged. Adding a cache-bust hook in a follow-up.\",\"created_at\":\"2026-05-04T14:00:00Z\"}]"
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "With the DB-change signal removed from #142, the leading suspect becomes PR #138 (Redis caching layer). Reviewer-2 flagged its 5-minute TTL — under load, this could surface as elevated tail latency from cache misses."
+              }
+            ]
+          }
+        ],
+        "tools": [
+          {
+            "name": "get_recent_prs",
+            "description": "List recent pull requests for a GitHub repo. Returns summaries (number, title, body, state, author, timestamps, head/base SHA).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "limit": {
+                    "def": {
+                      "type": "optional",
+                      "innerType": {
+                        "def": {
+                          "type": "number",
+                          "checks": [
+                            {
+                              "def": {
+                                "type": "number",
+                                "check": "number_format",
+                                "abort": false,
+                                "format": "safeint"
+                              },
+                              "type": "number",
+                              "minValue": -9007199254740991,
+                              "maxValue": 9007199254740991,
+                              "isInt": true,
+                              "isFinite": true,
+                              "format": "safeint"
+                            },
+                            {}
+                          ]
+                        },
+                        "type": "number",
+                        "minValue": 0,
+                        "maxValue": 9007199254740991,
+                        "isInt": true,
+                        "isFinite": true,
+                        "format": "safeint"
+                      }
+                    },
+                    "type": "optional"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_pr_diff",
+            "description": "Fetch the raw unified diff (`diff --git ...`) for a given pull request.",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "pr_id": {
+                    "def": {
+                      "type": "number",
+                      "checks": [
+                        {
+                          "def": {
+                            "type": "number",
+                            "check": "number_format",
+                            "abort": false,
+                            "format": "safeint"
+                          },
+                          "type": "number",
+                          "minValue": -9007199254740991,
+                          "maxValue": 9007199254740991,
+                          "isInt": true,
+                          "isFinite": true,
+                          "format": "safeint"
+                        },
+                        {}
+                      ]
+                    },
+                    "type": "number",
+                    "minValue": 0,
+                    "maxValue": 9007199254740991,
+                    "isInt": true,
+                    "isFinite": true,
+                    "format": "safeint"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_pr_comments",
+            "description": "Fetch issue comments on a pull request (general PR discussion, not inline review comments).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "pr_id": {
+                    "def": {
+                      "type": "number",
+                      "checks": [
+                        {
+                          "def": {
+                            "type": "number",
+                            "check": "number_format",
+                            "abort": false,
+                            "format": "safeint"
+                          },
+                          "type": "number",
+                          "minValue": -9007199254740991,
+                          "maxValue": 9007199254740991,
+                          "isInt": true,
+                          "isFinite": true,
+                          "format": "safeint"
+                        },
+                        {}
+                      ]
+                    },
+                    "type": "number",
+                    "minValue": 0,
+                    "maxValue": 9007199254740991,
+                    "isInt": true,
+                    "isFinite": true,
+                    "format": "safeint"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_commit_history",
+            "description": "List commits on the default branch, optionally filtered by `since` (ISO 8601 timestamp).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "since": {
+                    "def": {
+                      "type": "optional",
+                      "innerType": {
+                        "def": {
+                          "type": "string"
+                        },
+                        "type": "string",
+                        "format": null,
+                        "minLength": null,
+                        "maxLength": null
+                      }
+                    },
+                    "type": "optional"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "emit_decision",
+            "description": "Declare an explicit decision point in your investigation.\nCall this BEFORE fetching information that depends on a choice you just made,\nso the trace records why you went one way and not another.\nFields:\n  decision: stable machine-readable identifier (snake_case), e.g. 'investigate_prs'\n  label: short human-readable label\n  reasoning: one sentence — why this option, not the alternatives\n  alternatives: optional list of other decision identifiers you considered",
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "decision": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "reasoning": {
+                  "type": "string"
+                },
+                "alternatives": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "decision",
+                "label",
+                "reasoning"
+              ]
+            }
+          }
+        ],
+        "params": {
+          "temperature": 0,
+          "max_tokens": 4096
+        }
+      },
+      "request_hash": "d9ce19b990eabafe2bf43469ffa6132a7742509dd0149db5a32b5c24e83382e6",
+      "response": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_fork_1",
+            "name": "get_pr_diff",
+            "input": {
+              "repo": "cash-codes/checkout-service",
+              "pr_id": 138
+            }
+          }
+        ],
+        "stop_reason": "tool_use",
+        "model_served": "mock-model",
+        "request_id": "req-fork-l5mlnus6wdr",
+        "usage": {
+          "input_tokens": 100,
+          "output_tokens": 50
+        }
+      },
+      "diagnostics": {
+        "latency_ms": 0
+      }
+    },
+    {
+      "type": "tool_call",
+      "id": "03cb3769-a9e6-4e52-ade8-cc69893fb5d2",
+      "timestamp": 1778681548274,
+      "tool": "get_pr_diff",
+      "arguments": {
+        "repo": "cash-codes/checkout-service",
+        "pr_id": 138
+      },
+      "arguments_hash": "2d135b867bc0dbeebd8aa8a3f602f05e62ca9dd3a9990b26c2ae64bb092e093a",
+      "result": {
+        "output": "diff --git a/src/cache/catalog.ts b/src/cache/catalog.ts\nnew file mode 100644\nindex 0000000..a1b2c3d\n--- /dev/null\n+++ b/src/cache/catalog.ts\n@@ -0,0 +1,24 @@\n+import { redis } from \"../redis\";\n+import { fetchCatalogFromDb } from \"../db/catalog\";\n+\n+const TTL_SECONDS = 300;\n+\n+export async function getCatalog(key: string) {\n+  const cached = await redis.get(`catalog:${key}`);\n+  if (cached) return JSON.parse(cached);\n+  const fresh = await fetchCatalogFromDb(key);\n+  await redis.setex(`catalog:${key}`, TTL_SECONDS, JSON.stringify(fresh));\n+  return fresh;\n+}\n"
+      }
+    },
+    {
+      "type": "llm_call",
+      "id": "185705da-0ba0-4d1b-b089-d444418271ed",
+      "timestamp": 1778681548275,
+      "request": {
+        "model": "mock-model",
+        "system": "You are an investigation agent in the Adaptive Workspace runtime.\nYour job is to investigate a question by calling tools and explicitly declaring your decisions.\n\n# Tools available\n- get_recent_prs: List recent pull requests for a GitHub repo. Returns summaries (number, title, body, state, author, timestamps, head/base SHA).\n- get_pr_diff: Fetch the raw unified diff (`diff --git ...`) for a given pull request.\n- get_pr_comments: Fetch issue comments on a pull request (general PR discussion, not inline review comments).\n- get_commit_history: List commits on the default branch, optionally filtered by `since` (ISO 8601 timestamp).\n- emit_decision: Declare an explicit decision point in your investigation.\nCall this BEFORE fetching information that depends on a choice you just made,\nso the trace records why you went one way and not another.\nFields:\n  decision: stable machine-readable identifier (snake_case), e.g. 'investigate_prs'\n  label: short human-readable label\n  reasoning: one sentence — why this option, not the alternatives\n  alternatives: optional list of other decision identifiers you considered\n\n# How to work\n1. At each fork in your reasoning, call emit_decision BEFORE calling investigative tools.\n2. Call tools to gather evidence.\n3. Repeat: emit_decision → call tools → ...\n4. When you've reached a conclusion, output a final text message. Do not call more tools.",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Recent PRs to cash-codes/checkout-service have caused performance regressions. Investigate and identify the likely culprit."
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_1",
+                "name": "emit_decision",
+                "input": {
+                  "decision": "investigate_prs",
+                  "label": "Investigate recent PRs",
+                  "reasoning": "Most likely source of regression is recent merged code.",
+                  "alternatives": [
+                    "investigate_commits",
+                    "check_issues"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_1",
+                "content": "Decision recorded."
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_2",
+                "name": "get_recent_prs",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "limit": 20
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_2",
+                "content": "[{\"number\":145,\"title\":\"Update README badges\",\"body\":\"Add CI and coverage badges.\",\"state\":\"closed\",\"user\":{\"login\":\"alice\"},\"created_at\":\"2026-05-08T10:00:00Z\",\"head\":{\"sha\":\"sha-145\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":144,\"title\":\"Bump dependencies\",\"body\":\"Routine dependency bumps; no functional changes.\",\"state\":\"closed\",\"user\":{\"login\":\"bob\"},\"created_at\":\"2026-05-07T14:32:00Z\",\"head\":{\"sha\":\"sha-144\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":143,\"title\":\"Fix typo in checkout error message\",\"body\":\"Trivial copy fix.\",\"state\":\"closed\",\"user\":{\"login\":\"carol\"},\"created_at\":\"2026-05-07T09:11:00Z\",\"head\":{\"sha\":\"sha-143\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":142,\"title\":\"Refactor user query for performance\",\"body\":\"Inlines the user-lookup join, removes the cached prepared-statement path, and switches to a single composed SELECT. Should be faster on cold cache.\",\"state\":\"closed\",\"user\":{\"login\":\"dave\"},\"created_at\":\"2026-05-06T17:45:00Z\",\"head\":{\"sha\":\"sha-142\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":141,\"title\":\"Refactor order processing pipeline\",\"body\":\"Splits the order-processing module into smaller services.\",\"state\":\"closed\",\"user\":{\"login\":\"eve\"},\"created_at\":\"2026-05-06T11:20:00Z\",\"head\":{\"sha\":\"sha-141\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":140,\"title\":\"Add metrics dashboard config\",\"body\":\"Adds Grafana dashboard JSON for tracking p95 latency.\",\"state\":\"closed\",\"user\":{\"login\":\"alice\"},\"created_at\":\"2026-05-05T16:00:00Z\",\"head\":{\"sha\":\"sha-140\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":139,\"title\":\"Remove dead code in legacy adapter\",\"body\":\"Deletes unused fallback path.\",\"state\":\"closed\",\"user\":{\"login\":\"bob\"},\"created_at\":\"2026-05-05T10:00:00Z\",\"head\":{\"sha\":\"sha-139\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":138,\"title\":\"Add Redis caching layer for product catalog\",\"body\":\"Introduces a Redis-backed cache for product-catalog reads with a 5-minute TTL. Cache-miss path falls back to Postgres.\",\"state\":\"closed\",\"user\":{\"login\":\"carol\"},\"created_at\":\"2026-05-04T13:15:00Z\",\"head\":{\"sha\":\"sha-138\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":137,\"title\":\"Update CI workflow\",\"body\":\"Bumps Node version in CI.\",\"state\":\"closed\",\"user\":{\"login\":\"dave\"},\"created_at\":\"2026-05-04T09:00:00Z\",\"head\":{\"sha\":\"sha-137\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":136,\"title\":\"Documentation updates\",\"body\":\"Misc doc improvements.\",\"state\":\"closed\",\"user\":{\"login\":\"eve\"},\"created_at\":\"2026-05-03T17:00:00Z\",\"head\":{\"sha\":\"sha-136\"},\"base\":{\"sha\":\"main-1\"}}]"
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_3",
+                "name": "get_pr_diff",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "pr_id": 142
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_3",
+                "content": "\"diff --git a/src/queries/user.ts b/src/queries/user.ts\\n(benign: rename only, no semantic change)\\n\""
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_fork_1",
+                "name": "get_pr_diff",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "pr_id": 138
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_fork_1",
+                "content": "\"diff --git a/src/cache/catalog.ts b/src/cache/catalog.ts\\nnew file mode 100644\\nindex 0000000..a1b2c3d\\n--- /dev/null\\n+++ b/src/cache/catalog.ts\\n@@ -0,0 +1,24 @@\\n+import { redis } from \\\"../redis\\\";\\n+import { fetchCatalogFromDb } from \\\"../db/catalog\\\";\\n+\\n+const TTL_SECONDS = 300;\\n+\\n+export async function getCatalog(key: string) {\\n+  const cached = await redis.get(`catalog:${key}`);\\n+  if (cached) return JSON.parse(cached);\\n+  const fresh = await fetchCatalogFromDb(key);\\n+  await redis.setex(`catalog:${key}`, TTL_SECONDS, JSON.stringify(fresh));\\n+  return fresh;\\n+}\\n\""
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_fork_2",
+                "name": "get_pr_comments",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "pr_id": 138
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_fork_2",
+                "content": "[{\"id\":9101,\"user\":{\"login\":\"reviewer-2\"},\"body\":\"Watch the 5-minute TTL. If catalog updates need to be visible faster, this will surface as confusing reads.\",\"created_at\":\"2026-05-04T13:45:00Z\"},{\"id\":9102,\"user\":{\"login\":\"carol\"},\"body\":\"Acknowledged. Adding a cache-bust hook in a follow-up.\",\"created_at\":\"2026-05-04T14:00:00Z\"}]"
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "With the DB-change signal removed from #142, the leading suspect becomes PR #138 (Redis caching layer). Reviewer-2 flagged its 5-minute TTL — under load, this could surface as elevated tail latency from cache misses."
+              }
+            ]
+          }
+        ],
+        "tools": [
+          {
+            "name": "get_recent_prs",
+            "description": "List recent pull requests for a GitHub repo. Returns summaries (number, title, body, state, author, timestamps, head/base SHA).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "limit": {
+                    "def": {
+                      "type": "optional",
+                      "innerType": {
+                        "def": {
+                          "type": "number",
+                          "checks": [
+                            {
+                              "def": {
+                                "type": "number",
+                                "check": "number_format",
+                                "abort": false,
+                                "format": "safeint"
+                              },
+                              "type": "number",
+                              "minValue": -9007199254740991,
+                              "maxValue": 9007199254740991,
+                              "isInt": true,
+                              "isFinite": true,
+                              "format": "safeint"
+                            },
+                            {}
+                          ]
+                        },
+                        "type": "number",
+                        "minValue": 0,
+                        "maxValue": 9007199254740991,
+                        "isInt": true,
+                        "isFinite": true,
+                        "format": "safeint"
+                      }
+                    },
+                    "type": "optional"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_pr_diff",
+            "description": "Fetch the raw unified diff (`diff --git ...`) for a given pull request.",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "pr_id": {
+                    "def": {
+                      "type": "number",
+                      "checks": [
+                        {
+                          "def": {
+                            "type": "number",
+                            "check": "number_format",
+                            "abort": false,
+                            "format": "safeint"
+                          },
+                          "type": "number",
+                          "minValue": -9007199254740991,
+                          "maxValue": 9007199254740991,
+                          "isInt": true,
+                          "isFinite": true,
+                          "format": "safeint"
+                        },
+                        {}
+                      ]
+                    },
+                    "type": "number",
+                    "minValue": 0,
+                    "maxValue": 9007199254740991,
+                    "isInt": true,
+                    "isFinite": true,
+                    "format": "safeint"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_pr_comments",
+            "description": "Fetch issue comments on a pull request (general PR discussion, not inline review comments).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "pr_id": {
+                    "def": {
+                      "type": "number",
+                      "checks": [
+                        {
+                          "def": {
+                            "type": "number",
+                            "check": "number_format",
+                            "abort": false,
+                            "format": "safeint"
+                          },
+                          "type": "number",
+                          "minValue": -9007199254740991,
+                          "maxValue": 9007199254740991,
+                          "isInt": true,
+                          "isFinite": true,
+                          "format": "safeint"
+                        },
+                        {}
+                      ]
+                    },
+                    "type": "number",
+                    "minValue": 0,
+                    "maxValue": 9007199254740991,
+                    "isInt": true,
+                    "isFinite": true,
+                    "format": "safeint"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_commit_history",
+            "description": "List commits on the default branch, optionally filtered by `since` (ISO 8601 timestamp).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "since": {
+                    "def": {
+                      "type": "optional",
+                      "innerType": {
+                        "def": {
+                          "type": "string"
+                        },
+                        "type": "string",
+                        "format": null,
+                        "minLength": null,
+                        "maxLength": null
+                      }
+                    },
+                    "type": "optional"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "emit_decision",
+            "description": "Declare an explicit decision point in your investigation.\nCall this BEFORE fetching information that depends on a choice you just made,\nso the trace records why you went one way and not another.\nFields:\n  decision: stable machine-readable identifier (snake_case), e.g. 'investigate_prs'\n  label: short human-readable label\n  reasoning: one sentence — why this option, not the alternatives\n  alternatives: optional list of other decision identifiers you considered",
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "decision": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "reasoning": {
+                  "type": "string"
+                },
+                "alternatives": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "decision",
+                "label",
+                "reasoning"
+              ]
+            }
+          }
+        ],
+        "params": {
+          "temperature": 0,
+          "max_tokens": 4096
+        }
+      },
+      "request_hash": "59a1ef4ce75355ed4d7611f8045e5e0010b4c76815a62170ecb9e1c93b5c7ee7",
+      "response": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_fork_2",
+            "name": "get_pr_comments",
+            "input": {
+              "repo": "cash-codes/checkout-service",
+              "pr_id": 138
+            }
+          }
+        ],
+        "stop_reason": "tool_use",
+        "model_served": "mock-model",
+        "request_id": "req-fork-bwyweszbvk",
+        "usage": {
+          "input_tokens": 100,
+          "output_tokens": 50
+        }
+      },
+      "diagnostics": {
+        "latency_ms": 0
+      }
+    },
+    {
+      "type": "tool_call",
+      "id": "a965bb4d-2379-4da3-bf9f-c8d5143999ad",
+      "timestamp": 1778681548275,
+      "tool": "get_pr_comments",
+      "arguments": {
+        "repo": "cash-codes/checkout-service",
+        "pr_id": 138
+      },
+      "arguments_hash": "2d135b867bc0dbeebd8aa8a3f602f05e62ca9dd3a9990b26c2ae64bb092e093a",
+      "result": {
+        "output": [
+          {
+            "id": 9101,
+            "user": {
+              "login": "reviewer-2"
+            },
+            "body": "Watch the 5-minute TTL. If catalog updates need to be visible faster, this will surface as confusing reads.",
+            "created_at": "2026-05-04T13:45:00Z"
+          },
+          {
+            "id": 9102,
+            "user": {
+              "login": "carol"
+            },
+            "body": "Acknowledged. Adding a cache-bust hook in a follow-up.",
+            "created_at": "2026-05-04T14:00:00Z"
+          }
+        ]
+      }
+    },
+    {
+      "type": "llm_call",
+      "id": "ca1c3e06-19c3-4e12-8876-427be6450bf8",
+      "timestamp": 1778681548277,
+      "request": {
+        "model": "mock-model",
+        "system": "You are an investigation agent in the Adaptive Workspace runtime.\nYour job is to investigate a question by calling tools and explicitly declaring your decisions.\n\n# Tools available\n- get_recent_prs: List recent pull requests for a GitHub repo. Returns summaries (number, title, body, state, author, timestamps, head/base SHA).\n- get_pr_diff: Fetch the raw unified diff (`diff --git ...`) for a given pull request.\n- get_pr_comments: Fetch issue comments on a pull request (general PR discussion, not inline review comments).\n- get_commit_history: List commits on the default branch, optionally filtered by `since` (ISO 8601 timestamp).\n- emit_decision: Declare an explicit decision point in your investigation.\nCall this BEFORE fetching information that depends on a choice you just made,\nso the trace records why you went one way and not another.\nFields:\n  decision: stable machine-readable identifier (snake_case), e.g. 'investigate_prs'\n  label: short human-readable label\n  reasoning: one sentence — why this option, not the alternatives\n  alternatives: optional list of other decision identifiers you considered\n\n# How to work\n1. At each fork in your reasoning, call emit_decision BEFORE calling investigative tools.\n2. Call tools to gather evidence.\n3. Repeat: emit_decision → call tools → ...\n4. When you've reached a conclusion, output a final text message. Do not call more tools.",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Recent PRs to cash-codes/checkout-service have caused performance regressions. Investigate and identify the likely culprit."
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_1",
+                "name": "emit_decision",
+                "input": {
+                  "decision": "investigate_prs",
+                  "label": "Investigate recent PRs",
+                  "reasoning": "Most likely source of regression is recent merged code.",
+                  "alternatives": [
+                    "investigate_commits",
+                    "check_issues"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_1",
+                "content": "Decision recorded."
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_2",
+                "name": "get_recent_prs",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "limit": 20
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_2",
+                "content": "[{\"number\":145,\"title\":\"Update README badges\",\"body\":\"Add CI and coverage badges.\",\"state\":\"closed\",\"user\":{\"login\":\"alice\"},\"created_at\":\"2026-05-08T10:00:00Z\",\"head\":{\"sha\":\"sha-145\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":144,\"title\":\"Bump dependencies\",\"body\":\"Routine dependency bumps; no functional changes.\",\"state\":\"closed\",\"user\":{\"login\":\"bob\"},\"created_at\":\"2026-05-07T14:32:00Z\",\"head\":{\"sha\":\"sha-144\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":143,\"title\":\"Fix typo in checkout error message\",\"body\":\"Trivial copy fix.\",\"state\":\"closed\",\"user\":{\"login\":\"carol\"},\"created_at\":\"2026-05-07T09:11:00Z\",\"head\":{\"sha\":\"sha-143\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":142,\"title\":\"Refactor user query for performance\",\"body\":\"Inlines the user-lookup join, removes the cached prepared-statement path, and switches to a single composed SELECT. Should be faster on cold cache.\",\"state\":\"closed\",\"user\":{\"login\":\"dave\"},\"created_at\":\"2026-05-06T17:45:00Z\",\"head\":{\"sha\":\"sha-142\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":141,\"title\":\"Refactor order processing pipeline\",\"body\":\"Splits the order-processing module into smaller services.\",\"state\":\"closed\",\"user\":{\"login\":\"eve\"},\"created_at\":\"2026-05-06T11:20:00Z\",\"head\":{\"sha\":\"sha-141\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":140,\"title\":\"Add metrics dashboard config\",\"body\":\"Adds Grafana dashboard JSON for tracking p95 latency.\",\"state\":\"closed\",\"user\":{\"login\":\"alice\"},\"created_at\":\"2026-05-05T16:00:00Z\",\"head\":{\"sha\":\"sha-140\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":139,\"title\":\"Remove dead code in legacy adapter\",\"body\":\"Deletes unused fallback path.\",\"state\":\"closed\",\"user\":{\"login\":\"bob\"},\"created_at\":\"2026-05-05T10:00:00Z\",\"head\":{\"sha\":\"sha-139\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":138,\"title\":\"Add Redis caching layer for product catalog\",\"body\":\"Introduces a Redis-backed cache for product-catalog reads with a 5-minute TTL. Cache-miss path falls back to Postgres.\",\"state\":\"closed\",\"user\":{\"login\":\"carol\"},\"created_at\":\"2026-05-04T13:15:00Z\",\"head\":{\"sha\":\"sha-138\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":137,\"title\":\"Update CI workflow\",\"body\":\"Bumps Node version in CI.\",\"state\":\"closed\",\"user\":{\"login\":\"dave\"},\"created_at\":\"2026-05-04T09:00:00Z\",\"head\":{\"sha\":\"sha-137\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":136,\"title\":\"Documentation updates\",\"body\":\"Misc doc improvements.\",\"state\":\"closed\",\"user\":{\"login\":\"eve\"},\"created_at\":\"2026-05-03T17:00:00Z\",\"head\":{\"sha\":\"sha-136\"},\"base\":{\"sha\":\"main-1\"}}]"
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_3",
+                "name": "get_pr_diff",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "pr_id": 142
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_3",
+                "content": "\"diff --git a/src/queries/user.ts b/src/queries/user.ts\\n(benign: rename only, no semantic change)\\n\""
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_fork_1",
+                "name": "get_pr_diff",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "pr_id": 138
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_fork_1",
+                "content": "\"diff --git a/src/cache/catalog.ts b/src/cache/catalog.ts\\nnew file mode 100644\\nindex 0000000..a1b2c3d\\n--- /dev/null\\n+++ b/src/cache/catalog.ts\\n@@ -0,0 +1,24 @@\\n+import { redis } from \\\"../redis\\\";\\n+import { fetchCatalogFromDb } from \\\"../db/catalog\\\";\\n+\\n+const TTL_SECONDS = 300;\\n+\\n+export async function getCatalog(key: string) {\\n+  const cached = await redis.get(`catalog:${key}`);\\n+  if (cached) return JSON.parse(cached);\\n+  const fresh = await fetchCatalogFromDb(key);\\n+  await redis.setex(`catalog:${key}`, TTL_SECONDS, JSON.stringify(fresh));\\n+  return fresh;\\n+}\\n\""
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_fork_2",
+                "name": "get_pr_comments",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "pr_id": 138
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_fork_2",
+                "content": "[{\"id\":9101,\"user\":{\"login\":\"reviewer-2\"},\"body\":\"Watch the 5-minute TTL. If catalog updates need to be visible faster, this will surface as confusing reads.\",\"created_at\":\"2026-05-04T13:45:00Z\"},{\"id\":9102,\"user\":{\"login\":\"carol\"},\"body\":\"Acknowledged. Adding a cache-bust hook in a follow-up.\",\"created_at\":\"2026-05-04T14:00:00Z\"}]"
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "With the DB-change signal removed from #142, the leading suspect becomes PR #138 (Redis caching layer). Reviewer-2 flagged its 5-minute TTL — under load, this could surface as elevated tail latency from cache misses."
+              }
+            ]
+          }
+        ],
+        "tools": [
+          {
+            "name": "get_recent_prs",
+            "description": "List recent pull requests for a GitHub repo. Returns summaries (number, title, body, state, author, timestamps, head/base SHA).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "limit": {
+                    "def": {
+                      "type": "optional",
+                      "innerType": {
+                        "def": {
+                          "type": "number",
+                          "checks": [
+                            {
+                              "def": {
+                                "type": "number",
+                                "check": "number_format",
+                                "abort": false,
+                                "format": "safeint"
+                              },
+                              "type": "number",
+                              "minValue": -9007199254740991,
+                              "maxValue": 9007199254740991,
+                              "isInt": true,
+                              "isFinite": true,
+                              "format": "safeint"
+                            },
+                            {}
+                          ]
+                        },
+                        "type": "number",
+                        "minValue": 0,
+                        "maxValue": 9007199254740991,
+                        "isInt": true,
+                        "isFinite": true,
+                        "format": "safeint"
+                      }
+                    },
+                    "type": "optional"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_pr_diff",
+            "description": "Fetch the raw unified diff (`diff --git ...`) for a given pull request.",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "pr_id": {
+                    "def": {
+                      "type": "number",
+                      "checks": [
+                        {
+                          "def": {
+                            "type": "number",
+                            "check": "number_format",
+                            "abort": false,
+                            "format": "safeint"
+                          },
+                          "type": "number",
+                          "minValue": -9007199254740991,
+                          "maxValue": 9007199254740991,
+                          "isInt": true,
+                          "isFinite": true,
+                          "format": "safeint"
+                        },
+                        {}
+                      ]
+                    },
+                    "type": "number",
+                    "minValue": 0,
+                    "maxValue": 9007199254740991,
+                    "isInt": true,
+                    "isFinite": true,
+                    "format": "safeint"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_pr_comments",
+            "description": "Fetch issue comments on a pull request (general PR discussion, not inline review comments).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "pr_id": {
+                    "def": {
+                      "type": "number",
+                      "checks": [
+                        {
+                          "def": {
+                            "type": "number",
+                            "check": "number_format",
+                            "abort": false,
+                            "format": "safeint"
+                          },
+                          "type": "number",
+                          "minValue": -9007199254740991,
+                          "maxValue": 9007199254740991,
+                          "isInt": true,
+                          "isFinite": true,
+                          "format": "safeint"
+                        },
+                        {}
+                      ]
+                    },
+                    "type": "number",
+                    "minValue": 0,
+                    "maxValue": 9007199254740991,
+                    "isInt": true,
+                    "isFinite": true,
+                    "format": "safeint"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_commit_history",
+            "description": "List commits on the default branch, optionally filtered by `since` (ISO 8601 timestamp).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "since": {
+                    "def": {
+                      "type": "optional",
+                      "innerType": {
+                        "def": {
+                          "type": "string"
+                        },
+                        "type": "string",
+                        "format": null,
+                        "minLength": null,
+                        "maxLength": null
+                      }
+                    },
+                    "type": "optional"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "emit_decision",
+            "description": "Declare an explicit decision point in your investigation.\nCall this BEFORE fetching information that depends on a choice you just made,\nso the trace records why you went one way and not another.\nFields:\n  decision: stable machine-readable identifier (snake_case), e.g. 'investigate_prs'\n  label: short human-readable label\n  reasoning: one sentence — why this option, not the alternatives\n  alternatives: optional list of other decision identifiers you considered",
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "decision": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "reasoning": {
+                  "type": "string"
+                },
+                "alternatives": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "decision",
+                "label",
+                "reasoning"
+              ]
+            }
+          }
+        ],
+        "params": {
+          "temperature": 0,
+          "max_tokens": 4096
+        }
+      },
+      "request_hash": "28b5856d233960219d9aa00fadef90f6418dec038282d4da2b42f26a152e1b34",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "With the DB-change signal removed from #142, the leading suspect becomes PR #138 (Redis caching layer). Reviewer-2 flagged its 5-minute TTL — under load, this could surface as elevated tail latency from cache misses."
+          }
+        ],
+        "stop_reason": "end_turn",
+        "model_served": "mock-model",
+        "request_id": "req-fork-8b7lylf81rk",
+        "usage": {
+          "input_tokens": 100,
+          "output_tokens": 50
+        }
+      },
+      "diagnostics": {
+        "latency_ms": 0
+      }
+    },
+    {
+      "type": "runtime",
+      "id": "864c0198-c3b7-4f80-89f5-4325149e3240",
+      "timestamp": 1778681548274,
+      "kind": "now",
+      "value": 1778681548274
+    },
+    {
+      "type": "runtime",
+      "id": "105d35cf-c77f-4c29-8c78-fd53b92d5361",
+      "timestamp": 1778681548274,
+      "kind": "now",
+      "value": 1778681548274
+    },
+    {
+      "type": "runtime",
+      "id": "2302af32-7015-4499-b375-9e371da7d4a6",
+      "timestamp": 1778681548274,
+      "kind": "random_uuid",
+      "value": "6b66840e-1c59-4b9e-b1f8-a95a86125313"
+    },
+    {
+      "type": "runtime",
+      "id": "d5fcf885-be87-4e52-b1a4-2abdd8d71093",
+      "timestamp": 1778681548274,
+      "kind": "random_uuid",
+      "value": "03cb3769-a9e6-4e52-ade8-cc69893fb5d2"
+    },
+    {
+      "type": "runtime",
+      "id": "2bbf4e8a-9fe7-4a30-acaf-6f52c7d52b87",
+      "timestamp": 1778681548274,
+      "kind": "now",
+      "value": 1778681548274
+    },
+    {
+      "type": "runtime",
+      "id": "d4c43b18-8c01-493c-8b14-60fc38192128",
+      "timestamp": 1778681548275,
+      "kind": "now",
+      "value": 1778681548275
+    },
+    {
+      "type": "runtime",
+      "id": "65f48d98-f1cd-4081-9114-9ab644a98293",
+      "timestamp": 1778681548275,
+      "kind": "now",
+      "value": 1778681548275
+    },
+    {
+      "type": "runtime",
+      "id": "901d5ff3-9310-4b92-b6d0-1217888b3533",
+      "timestamp": 1778681548275,
+      "kind": "random_uuid",
+      "value": "185705da-0ba0-4d1b-b089-d444418271ed"
+    },
+    {
+      "type": "runtime",
+      "id": "e716c09d-4da8-43cf-96bf-d45fe220c9f2",
+      "timestamp": 1778681548275,
+      "kind": "random_uuid",
+      "value": "a965bb4d-2379-4da3-bf9f-c8d5143999ad"
+    },
+    {
+      "type": "runtime",
+      "id": "860cb30e-ee80-4938-b78d-397ea136a1f9",
+      "timestamp": 1778681548275,
+      "kind": "now",
+      "value": 1778681548275
+    },
+    {
+      "type": "runtime",
+      "id": "48999319-3b7d-410a-ae06-e60f085a91e8",
+      "timestamp": 1778681548277,
+      "kind": "now",
+      "value": 1778681548277
+    },
+    {
+      "type": "runtime",
+      "id": "0b25d1b1-1197-428d-9dec-500e400207e1",
+      "timestamp": 1778681548277,
+      "kind": "now",
+      "value": 1778681548277
+    },
+    {
+      "type": "runtime",
+      "id": "52209b66-635b-4d34-8f56-949bc16344c3",
+      "timestamp": 1778681548277,
+      "kind": "random_uuid",
+      "value": "ca1c3e06-19c3-4e12-8876-427be6450bf8"
+    }
+  ]
+}

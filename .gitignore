@@ -48,9 +48,10 @@ next-env.d.ts
 # distribution
 /dist
 
-# Recorded runs: local-only by default; seed demo-run.json + .gitkeep are tracked
+# Recorded runs: local-only by default; seed demo-run.json + demo-fork.json + .gitkeep are tracked
 /data/runs/*
 !/data/runs/demo-run.json
+!/data/runs/demo-fork.json
 !/data/runs/.gitkeep
 
 /docs/
