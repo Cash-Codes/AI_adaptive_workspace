@@ -96,9 +96,14 @@ async function main() {
     "Recent PRs to cash-codes/checkout-service have caused performance regressions. Investigate and identify the likely culprit.",
   );
 
+  // Stable id so the file is always at data/runs/demo-run.json and reachable
+  // at /runs/demo-run in the UI. The orchestrator-generated uuid is replaced
+  // post-hoc; this is a demo fixture, not a real run.
+  run.metadata.id = "demo-run";
+
   const outDir = join(process.cwd(), "data", "runs");
   mkdirSync(outDir, { recursive: true });
-  const path = join(outDir, "demo-run.json");
+  const path = join(outDir, `${run.metadata.id}.json`);
   writeFileSync(path, JSON.stringify(run, null, 2));
   console.log(`Wrote demo run to ${path}`);
   console.log(`  Run ID: ${run.metadata.id}`);
