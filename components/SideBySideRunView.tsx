@@ -13,11 +13,16 @@ type TypedEvent = Exclude<Event, { type: "runtime" }>;
 type Pair = {
   base: TypedEvent | null;
   fork: TypedEvent | null;
+  // True only for the FIRST pair where divergence is detected (so the
+  // "Divergence point" banner appears exactly once).
   divergent: boolean;
-  // True when both sides have the same event id but the content was edited
-  // (the fork point itself, e.g. a substituted tool_output or decision).
-  // Distinguished from divergent-by-different-ids (post-fork drift) so the UI
-  // can show a clearer cue.
+  // True for every pair at or after the divergence point — drives the
+  // amber background tint on both cells, making the post-fork area
+  // visible at a glance.
+  postFork: boolean;
+  // True when both sides have the same event id but content was edited
+  // (the fork point itself). Distinguished from divergent-by-different-ids
+  // so the banner can label it.
   edited: boolean;
 };
 
@@ -42,10 +47,17 @@ function align(base: Run, fork: Run): Pair[] {
         base: bi,
         fork: fi,
         divergent: true,
+        postFork: true,
         edited: Boolean(sameId && !sameContent),
       });
     } else {
-      pairs.push({ base: bi, fork: fi, divergent: false, edited: false });
+      pairs.push({
+        base: bi,
+        fork: fi,
+        divergent: false,
+        postFork: diverged,
+        edited: false,
+      });
     }
   }
   return pairs;
@@ -75,12 +87,12 @@ export function SideBySideRunView({ base, fork }: Props) {
               </div>
             )}
             <div className="grid grid-cols-2 divide-x divide-gray-100">
-              <div className={p.divergent ? "bg-amber-50/40 ring-1 ring-inset ring-amber-200" : ""}>
+              <div className={p.postFork ? "bg-amber-50" : ""}>
                 {p.base && (
                   <CardCell event={p.base} runId={base.metadata.id} selectedId={selectedId} />
                 )}
               </div>
-              <div className={p.divergent ? "bg-amber-50/40 ring-1 ring-inset ring-amber-200" : ""}>
+              <div className={p.postFork ? "bg-amber-50" : ""}>
                 {p.fork && (
                   <CardCell event={p.fork} runId={fork.metadata.id} selectedId={selectedId} />
                 )}
