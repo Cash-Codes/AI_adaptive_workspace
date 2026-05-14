@@ -14,6 +14,11 @@ type Pair = {
   base: TypedEvent | null;
   fork: TypedEvent | null;
   divergent: boolean;
+  // True when both sides have the same event id but the content was edited
+  // (the fork point itself, e.g. a substituted tool_output or decision).
+  // Distinguished from divergent-by-different-ids (post-fork drift) so the UI
+  // can show a clearer cue.
+  edited: boolean;
 };
 
 function typedEvents(run: Run): TypedEvent[] {
@@ -33,9 +38,14 @@ function align(base: Run, fork: Run): Pair[] {
     const sameContent = sameId && JSON.stringify(bi) === JSON.stringify(fi);
     if (!diverged && (!sameId || !sameContent) && (bi || fi)) {
       diverged = true;
-      pairs.push({ base: bi, fork: fi, divergent: true });
+      pairs.push({
+        base: bi,
+        fork: fi,
+        divergent: true,
+        edited: Boolean(sameId && !sameContent),
+      });
     } else {
-      pairs.push({ base: bi, fork: fi, divergent: false });
+      pairs.push({ base: bi, fork: fi, divergent: false, edited: false });
     }
   }
   return pairs;
@@ -61,16 +71,16 @@ export function SideBySideRunView({ base, fork }: Props) {
           <li key={i}>
             {p.divergent && (
               <div className="bg-amber-50 px-3 py-1 text-xs font-medium text-amber-800">
-                Divergence point
+                Divergence point {p.edited && "— edited"}
               </div>
             )}
             <div className="grid grid-cols-2 divide-x divide-gray-100">
-              <div>
+              <div className={p.divergent ? "bg-amber-50/40 ring-1 ring-inset ring-amber-200" : ""}>
                 {p.base && (
                   <CardCell event={p.base} runId={base.metadata.id} selectedId={selectedId} />
                 )}
               </div>
-              <div>
+              <div className={p.divergent ? "bg-amber-50/40 ring-1 ring-inset ring-amber-200" : ""}>
                 {p.fork && (
                   <CardCell event={p.fork} runId={fork.metadata.id} selectedId={selectedId} />
                 )}

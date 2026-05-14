@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { RunMetadata } from "@/lib/storage/json-store";
+import { shortId } from "@/lib/format";
 
 export function RunList({ runs }: { runs: RunMetadata[] }) {
   if (runs.length === 0) {
@@ -31,7 +32,7 @@ export function RunList({ runs }: { runs: RunMetadata[] }) {
           <tr key={r.id} className="border-b border-gray-100 hover:bg-gray-50">
             <td className="px-3 py-2">
               <Link href={`/runs/${r.id}`} className="font-mono text-blue-600 hover:underline">
-                {r.id.slice(0, 8)}
+                {shortId(r.id)}
               </Link>
             </td>
             <td className="px-3 py-2">{r.workflow}</td>
@@ -39,7 +40,7 @@ export function RunList({ runs }: { runs: RunMetadata[] }) {
               {new Date(r.created_at).toISOString()}
             </td>
             <td className="px-3 py-2 font-mono text-xs text-gray-500">
-              {r.base_run_id ? `${r.base_run_id.slice(0, 8)} (fork)` : "—"}
+              {r.base_run_id ? `${shortId(r.base_run_id)} (fork)` : "—"}
             </td>
           </tr>
         ))}
