@@ -1,7 +1,8 @@
 import type { Event } from "@/lib/events";
 import { JsonViewer } from "@/components/JsonViewer";
+import { ForkEditPanel } from "@/components/ForkEditPanel";
 
-export function EventInspector({ event }: { event: Event | null }) {
+export function EventInspector({ event, baseRunId }: { event: Event | null; baseRunId?: string }) {
   if (!event) {
     return <p className="text-sm text-gray-600">Click an event in the timeline to inspect.</p>;
   }
@@ -17,6 +18,10 @@ export function EventInspector({ event }: { event: Event | null }) {
       {event.type === "tool_call" && <ToolCallView event={event} />}
       {event.type === "llm_call" && <LLMCallView event={event} />}
       {event.type === "runtime" && <RuntimeView event={event} />}
+
+      {baseRunId && (event.type === "decision" || event.type === "tool_call") && (
+        <ForkEditPanel event={event} baseRunId={baseRunId} />
+      )}
     </div>
   );
 }

@@ -7,7 +7,7 @@ import { EventInspector } from "@/components/EventInspector";
 
 export function RunDetail({ run }: { run: Run }) {
   const params = useSearchParams();
-  const selectedId = params.get("event");
+  const selectedId = params?.get("event") ?? null;
   const selected = run.events.find((e) => e.id === selectedId) ?? null;
 
   return (
@@ -16,7 +16,7 @@ export function RunDetail({ run }: { run: Run }) {
         <RunTimeline events={run.events} selectedEventId={selectedId} runId={run.metadata.id} />
       </div>
       <div className="overflow-auto p-4">
-        <EventInspector event={selected} />
+        <EventInspector event={selected} baseRunId={run.metadata.id} />
       </div>
     </div>
   );
