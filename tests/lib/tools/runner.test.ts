@@ -47,14 +47,24 @@ describe("ToolRunner", () => {
     expect(await runner.run("pair", { b: 2, a: 1 })).toBe("ok");
   });
 
-  it("snapshot mode throws when no entry matches the arguments", async () => {
+  it("snapshot mode falls back to the first recorded entry when args don't exactly match", async () => {
     const runner = new ToolRunner({
       mode: "snapshot",
       tools: [ECHO_TOOL],
       snapshot: { echo: [{ arguments: { msg: "hi" }, result: { reply: "x" } }] },
       ctx: {},
     });
-    await expect(runner.run("echo", { msg: "miss" })).rejects.toThrow(/no snapshot/i);
+    expect(await runner.run("echo", { msg: "miss" })).toEqual({ reply: "x" });
+  });
+
+  it("snapshot mode throws when no entries exist for the tool at all", async () => {
+    const runner = new ToolRunner({
+      mode: "snapshot",
+      tools: [ECHO_TOOL],
+      snapshot: {},
+      ctx: {},
+    });
+    await expect(runner.run("echo", { msg: "hi" })).rejects.toThrow(/no snapshot/i);
   });
 
   it("live mode calls execute and validates output", async () => {
