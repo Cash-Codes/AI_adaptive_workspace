@@ -1,0 +1,2281 @@
+{
+  "metadata": {
+    "id": "demo-run",
+    "created_at": 1778825515932,
+    "workflow": "github-investigation"
+  },
+  "events": [
+    {
+      "type": "llm_call",
+      "id": "402f5e98-6adf-4848-9c2a-8d68abcbc42b",
+      "timestamp": 1778825515933,
+      "request": {
+        "model": "claude-sonnet-4-6",
+        "system": "You are an investigation agent in the Adaptive Workspace runtime.\nYour job is to investigate a question by calling tools and explicitly declaring your decisions.\n\n# Tools available\n- get_recent_prs: List recent pull requests for a GitHub repo. Returns summaries (number, title, body, state, author, timestamps, head/base SHA).\n- get_pr_diff: Fetch the raw unified diff (`diff --git ...`) for a given pull request.\n- get_pr_comments: Fetch issue comments on a pull request (general PR discussion, not inline review comments).\n- get_commit_history: List commits on the default branch, optionally filtered by `since` (ISO 8601 timestamp).\n- emit_decision: Declare an explicit decision point in your investigation.\nCall this BEFORE fetching information that depends on a choice you just made,\nso the trace records why you went one way and not another.\nFields:\n  decision: stable machine-readable identifier (snake_case), e.g. 'investigate_prs'\n  label: short human-readable label\n  reasoning: one sentence - why this option, not the alternatives\n  alternatives: optional list of other decision identifiers you considered\n\n# How to work\n1. At each fork in your reasoning, call emit_decision BEFORE calling investigative tools.\n2. Call tools to gather evidence.\n3. Repeat: emit_decision → call tools → ...\n4. When you've reached a conclusion, output a final text message. Do not call more tools.",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Recent PRs to cash-codes/checkout-service have caused performance regressions. Investigate and identify the likely culprit."
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_1",
+                "name": "emit_decision",
+                "input": {
+                  "decision": "investigate_prs",
+                  "label": "Investigate recent PRs",
+                  "reasoning": "Most likely source of regression is recent merged code.",
+                  "alternatives": [
+                    "investigate_commits",
+                    "check_issues"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_1",
+                "content": "Decision recorded."
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_2",
+                "name": "get_recent_prs",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "limit": 20
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_2",
+                "content": "[{\"number\":145,\"title\":\"Update README badges\",\"body\":\"Add CI and coverage badges.\",\"state\":\"closed\",\"user\":{\"login\":\"alice\"},\"created_at\":\"2026-05-08T10:00:00Z\",\"head\":{\"sha\":\"sha-145\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":144,\"title\":\"Bump dependencies\",\"body\":\"Routine dependency bumps; no functional changes.\",\"state\":\"closed\",\"user\":{\"login\":\"bob\"},\"created_at\":\"2026-05-07T14:32:00Z\",\"head\":{\"sha\":\"sha-144\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":143,\"title\":\"Fix typo in checkout error message\",\"body\":\"Trivial copy fix.\",\"state\":\"closed\",\"user\":{\"login\":\"carol\"},\"created_at\":\"2026-05-07T09:11:00Z\",\"head\":{\"sha\":\"sha-143\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":142,\"title\":\"Refactor user query for performance\",\"body\":\"Inlines the user-lookup join, removes the cached prepared-statement path and switches to a single composed SELECT. Should be faster on cold cache.\",\"state\":\"closed\",\"user\":{\"login\":\"dave\"},\"created_at\":\"2026-05-06T17:45:00Z\",\"head\":{\"sha\":\"sha-142\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":141,\"title\":\"Refactor order processing pipeline\",\"body\":\"Splits the order-processing module into smaller services.\",\"state\":\"closed\",\"user\":{\"login\":\"eve\"},\"created_at\":\"2026-05-06T11:20:00Z\",\"head\":{\"sha\":\"sha-141\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":140,\"title\":\"Add metrics dashboard config\",\"body\":\"Adds Grafana dashboard JSON for tracking p95 latency.\",\"state\":\"closed\",\"user\":{\"login\":\"alice\"},\"created_at\":\"2026-05-05T16:00:00Z\",\"head\":{\"sha\":\"sha-140\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":139,\"title\":\"Remove dead code in legacy adapter\",\"body\":\"Deletes unused fallback path.\",\"state\":\"closed\",\"user\":{\"login\":\"bob\"},\"created_at\":\"2026-05-05T10:00:00Z\",\"head\":{\"sha\":\"sha-139\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":138,\"title\":\"Add Redis caching layer for product catalog\",\"body\":\"Introduces a Redis-backed cache for product-catalog reads with a 5-minute TTL. Cache-miss path falls back to Postgres.\",\"state\":\"closed\",\"user\":{\"login\":\"carol\"},\"created_at\":\"2026-05-04T13:15:00Z\",\"head\":{\"sha\":\"sha-138\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":137,\"title\":\"Update CI workflow\",\"body\":\"Bumps Node version in CI.\",\"state\":\"closed\",\"user\":{\"login\":\"dave\"},\"created_at\":\"2026-05-04T09:00:00Z\",\"head\":{\"sha\":\"sha-137\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":136,\"title\":\"Documentation updates\",\"body\":\"Misc doc improvements.\",\"state\":\"closed\",\"user\":{\"login\":\"eve\"},\"created_at\":\"2026-05-03T17:00:00Z\",\"head\":{\"sha\":\"sha-136\"},\"base\":{\"sha\":\"main-1\"}}]"
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_3",
+                "name": "get_pr_diff",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "pr_id": 142
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_3",
+                "content": "\"diff --git a/src/queries/user.ts b/src/queries/user.ts\\nindex 1a2b3c4..5d6e7f8 100644\\n--- a/src/queries/user.ts\\n+++ b/src/queries/user.ts\\n@@ -1,18 +1,12 @@\\n-import { pool, prepared } from \\\"./db\\\";\\n+import { pool } from \\\"./db\\\";\\n\\n-const getUserStmt = prepared(\\n-  \\\"SELECT u.* FROM users u WHERE u.id = $1\\\"\\n-);\\n-\\n export async function getUser(id: string) {\\n-  return getUserStmt.get(id);\\n+  const { rows } = await pool.query(\\n+    `SELECT u.id, u.email, u.created_at,\\n+            o.id AS order_id, o.total\\n+     FROM users u\\n+     LEFT JOIN orders o ON o.user_id = u.id\\n+     WHERE u.id = $1`,\\n+    [id]\\n+  );\\n+  return rows;\\n }\\n\""
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_4",
+                "name": "get_pr_comments",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "pr_id": 142
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_4",
+                "content": "[{\"id\":9001,\"user\":{\"login\":\"reviewer-1\"},\"body\":\"Removing the prepared-statement path will mean every query re-plans on Postgres. On hot paths under load this can show up as elevated p95.\",\"created_at\":\"2026-05-06T18:01:00Z\"},{\"id\":9002,\"user\":{\"login\":\"dave\"},\"body\":\"Good point, but Postgres plan cache should handle it for repeated queries.\",\"created_at\":\"2026-05-06T18:30:00Z\"}]"
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "PR #142 (Refactor user query for performance) likely caused the regression. It removes the cached prepared-statement path, forcing Postgres to re-plan every query - reviewer-1 raised exactly this concern in the PR thread."
+              }
+            ]
+          }
+        ],
+        "tools": [
+          {
+            "name": "get_recent_prs",
+            "description": "List recent pull requests for a GitHub repo. Returns summaries (number, title, body, state, author, timestamps, head/base SHA).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "limit": {
+                    "def": {
+                      "type": "optional",
+                      "innerType": {
+                        "def": {
+                          "type": "number",
+                          "checks": [
+                            {
+                              "def": {
+                                "type": "number",
+                                "check": "number_format",
+                                "abort": false,
+                                "format": "safeint"
+                              },
+                              "type": "number",
+                              "minValue": -9007199254740991,
+                              "maxValue": 9007199254740991,
+                              "isInt": true,
+                              "isFinite": true,
+                              "format": "safeint"
+                            },
+                            {}
+                          ]
+                        },
+                        "type": "number",
+                        "minValue": 0,
+                        "maxValue": 9007199254740991,
+                        "isInt": true,
+                        "isFinite": true,
+                        "format": "safeint"
+                      }
+                    },
+                    "type": "optional"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_pr_diff",
+            "description": "Fetch the raw unified diff (`diff --git ...`) for a given pull request.",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "pr_id": {
+                    "def": {
+                      "type": "number",
+                      "checks": [
+                        {
+                          "def": {
+                            "type": "number",
+                            "check": "number_format",
+                            "abort": false,
+                            "format": "safeint"
+                          },
+                          "type": "number",
+                          "minValue": -9007199254740991,
+                          "maxValue": 9007199254740991,
+                          "isInt": true,
+                          "isFinite": true,
+                          "format": "safeint"
+                        },
+                        {}
+                      ]
+                    },
+                    "type": "number",
+                    "minValue": 0,
+                    "maxValue": 9007199254740991,
+                    "isInt": true,
+                    "isFinite": true,
+                    "format": "safeint"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_pr_comments",
+            "description": "Fetch issue comments on a pull request (general PR discussion, not inline review comments).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "pr_id": {
+                    "def": {
+                      "type": "number",
+                      "checks": [
+                        {
+                          "def": {
+                            "type": "number",
+                            "check": "number_format",
+                            "abort": false,
+                            "format": "safeint"
+                          },
+                          "type": "number",
+                          "minValue": -9007199254740991,
+                          "maxValue": 9007199254740991,
+                          "isInt": true,
+                          "isFinite": true,
+                          "format": "safeint"
+                        },
+                        {}
+                      ]
+                    },
+                    "type": "number",
+                    "minValue": 0,
+                    "maxValue": 9007199254740991,
+                    "isInt": true,
+                    "isFinite": true,
+                    "format": "safeint"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_commit_history",
+            "description": "List commits on the default branch, optionally filtered by `since` (ISO 8601 timestamp).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "since": {
+                    "def": {
+                      "type": "optional",
+                      "innerType": {
+                        "def": {
+                          "type": "string"
+                        },
+                        "type": "string",
+                        "format": null,
+                        "minLength": null,
+                        "maxLength": null
+                      }
+                    },
+                    "type": "optional"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "emit_decision",
+            "description": "Declare an explicit decision point in your investigation.\nCall this BEFORE fetching information that depends on a choice you just made,\nso the trace records why you went one way and not another.\nFields:\n  decision: stable machine-readable identifier (snake_case), e.g. 'investigate_prs'\n  label: short human-readable label\n  reasoning: one sentence - why this option, not the alternatives\n  alternatives: optional list of other decision identifiers you considered",
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "decision": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "reasoning": {
+                  "type": "string"
+                },
+                "alternatives": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "decision",
+                "label",
+                "reasoning"
+              ]
+            }
+          }
+        ],
+        "params": {
+          "temperature": 0,
+          "max_tokens": 4096
+        }
+      },
+      "request_hash": "1effce7fe885e92cc75dc96dd450e5768366c6263bd3084402f4a057dd48ab87",
+      "response": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_1",
+            "name": "emit_decision",
+            "input": {
+              "decision": "investigate_prs",
+              "label": "Investigate recent PRs",
+              "reasoning": "Most likely source of regression is recent merged code.",
+              "alternatives": [
+                "investigate_commits",
+                "check_issues"
+              ]
+            }
+          }
+        ],
+        "stop_reason": "tool_use",
+        "model_served": "mock-model",
+        "request_id": "req-demo-l6ivz5jdq5",
+        "usage": {
+          "input_tokens": 100,
+          "output_tokens": 50
+        }
+      },
+      "diagnostics": {
+        "latency_ms": 0
+      }
+    },
+    {
+      "type": "decision",
+      "id": "2644187a-c94a-4d82-88f4-484f3a74bcda",
+      "timestamp": 1778825515933,
+      "decision": "investigate_prs",
+      "label": "Investigate recent PRs",
+      "reasoning": "Most likely source of regression is recent merged code.",
+      "alternatives": [
+        "investigate_commits",
+        "check_issues"
+      ]
+    },
+    {
+      "type": "llm_call",
+      "id": "8187bda9-1fde-4275-8193-0151ce918753",
+      "timestamp": 1778825515934,
+      "request": {
+        "model": "claude-sonnet-4-6",
+        "system": "You are an investigation agent in the Adaptive Workspace runtime.\nYour job is to investigate a question by calling tools and explicitly declaring your decisions.\n\n# Tools available\n- get_recent_prs: List recent pull requests for a GitHub repo. Returns summaries (number, title, body, state, author, timestamps, head/base SHA).\n- get_pr_diff: Fetch the raw unified diff (`diff --git ...`) for a given pull request.\n- get_pr_comments: Fetch issue comments on a pull request (general PR discussion, not inline review comments).\n- get_commit_history: List commits on the default branch, optionally filtered by `since` (ISO 8601 timestamp).\n- emit_decision: Declare an explicit decision point in your investigation.\nCall this BEFORE fetching information that depends on a choice you just made,\nso the trace records why you went one way and not another.\nFields:\n  decision: stable machine-readable identifier (snake_case), e.g. 'investigate_prs'\n  label: short human-readable label\n  reasoning: one sentence - why this option, not the alternatives\n  alternatives: optional list of other decision identifiers you considered\n\n# How to work\n1. At each fork in your reasoning, call emit_decision BEFORE calling investigative tools.\n2. Call tools to gather evidence.\n3. Repeat: emit_decision → call tools → ...\n4. When you've reached a conclusion, output a final text message. Do not call more tools.",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Recent PRs to cash-codes/checkout-service have caused performance regressions. Investigate and identify the likely culprit."
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_1",
+                "name": "emit_decision",
+                "input": {
+                  "decision": "investigate_prs",
+                  "label": "Investigate recent PRs",
+                  "reasoning": "Most likely source of regression is recent merged code.",
+                  "alternatives": [
+                    "investigate_commits",
+                    "check_issues"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_1",
+                "content": "Decision recorded."
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_2",
+                "name": "get_recent_prs",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "limit": 20
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_2",
+                "content": "[{\"number\":145,\"title\":\"Update README badges\",\"body\":\"Add CI and coverage badges.\",\"state\":\"closed\",\"user\":{\"login\":\"alice\"},\"created_at\":\"2026-05-08T10:00:00Z\",\"head\":{\"sha\":\"sha-145\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":144,\"title\":\"Bump dependencies\",\"body\":\"Routine dependency bumps; no functional changes.\",\"state\":\"closed\",\"user\":{\"login\":\"bob\"},\"created_at\":\"2026-05-07T14:32:00Z\",\"head\":{\"sha\":\"sha-144\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":143,\"title\":\"Fix typo in checkout error message\",\"body\":\"Trivial copy fix.\",\"state\":\"closed\",\"user\":{\"login\":\"carol\"},\"created_at\":\"2026-05-07T09:11:00Z\",\"head\":{\"sha\":\"sha-143\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":142,\"title\":\"Refactor user query for performance\",\"body\":\"Inlines the user-lookup join, removes the cached prepared-statement path and switches to a single composed SELECT. Should be faster on cold cache.\",\"state\":\"closed\",\"user\":{\"login\":\"dave\"},\"created_at\":\"2026-05-06T17:45:00Z\",\"head\":{\"sha\":\"sha-142\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":141,\"title\":\"Refactor order processing pipeline\",\"body\":\"Splits the order-processing module into smaller services.\",\"state\":\"closed\",\"user\":{\"login\":\"eve\"},\"created_at\":\"2026-05-06T11:20:00Z\",\"head\":{\"sha\":\"sha-141\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":140,\"title\":\"Add metrics dashboard config\",\"body\":\"Adds Grafana dashboard JSON for tracking p95 latency.\",\"state\":\"closed\",\"user\":{\"login\":\"alice\"},\"created_at\":\"2026-05-05T16:00:00Z\",\"head\":{\"sha\":\"sha-140\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":139,\"title\":\"Remove dead code in legacy adapter\",\"body\":\"Deletes unused fallback path.\",\"state\":\"closed\",\"user\":{\"login\":\"bob\"},\"created_at\":\"2026-05-05T10:00:00Z\",\"head\":{\"sha\":\"sha-139\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":138,\"title\":\"Add Redis caching layer for product catalog\",\"body\":\"Introduces a Redis-backed cache for product-catalog reads with a 5-minute TTL. Cache-miss path falls back to Postgres.\",\"state\":\"closed\",\"user\":{\"login\":\"carol\"},\"created_at\":\"2026-05-04T13:15:00Z\",\"head\":{\"sha\":\"sha-138\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":137,\"title\":\"Update CI workflow\",\"body\":\"Bumps Node version in CI.\",\"state\":\"closed\",\"user\":{\"login\":\"dave\"},\"created_at\":\"2026-05-04T09:00:00Z\",\"head\":{\"sha\":\"sha-137\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":136,\"title\":\"Documentation updates\",\"body\":\"Misc doc improvements.\",\"state\":\"closed\",\"user\":{\"login\":\"eve\"},\"created_at\":\"2026-05-03T17:00:00Z\",\"head\":{\"sha\":\"sha-136\"},\"base\":{\"sha\":\"main-1\"}}]"
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_3",
+                "name": "get_pr_diff",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "pr_id": 142
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_3",
+                "content": "\"diff --git a/src/queries/user.ts b/src/queries/user.ts\\nindex 1a2b3c4..5d6e7f8 100644\\n--- a/src/queries/user.ts\\n+++ b/src/queries/user.ts\\n@@ -1,18 +1,12 @@\\n-import { pool, prepared } from \\\"./db\\\";\\n+import { pool } from \\\"./db\\\";\\n\\n-const getUserStmt = prepared(\\n-  \\\"SELECT u.* FROM users u WHERE u.id = $1\\\"\\n-);\\n-\\n export async function getUser(id: string) {\\n-  return getUserStmt.get(id);\\n+  const { rows } = await pool.query(\\n+    `SELECT u.id, u.email, u.created_at,\\n+            o.id AS order_id, o.total\\n+     FROM users u\\n+     LEFT JOIN orders o ON o.user_id = u.id\\n+     WHERE u.id = $1`,\\n+    [id]\\n+  );\\n+  return rows;\\n }\\n\""
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_4",
+                "name": "get_pr_comments",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "pr_id": 142
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_4",
+                "content": "[{\"id\":9001,\"user\":{\"login\":\"reviewer-1\"},\"body\":\"Removing the prepared-statement path will mean every query re-plans on Postgres. On hot paths under load this can show up as elevated p95.\",\"created_at\":\"2026-05-06T18:01:00Z\"},{\"id\":9002,\"user\":{\"login\":\"dave\"},\"body\":\"Good point, but Postgres plan cache should handle it for repeated queries.\",\"created_at\":\"2026-05-06T18:30:00Z\"}]"
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "PR #142 (Refactor user query for performance) likely caused the regression. It removes the cached prepared-statement path, forcing Postgres to re-plan every query - reviewer-1 raised exactly this concern in the PR thread."
+              }
+            ]
+          }
+        ],
+        "tools": [
+          {
+            "name": "get_recent_prs",
+            "description": "List recent pull requests for a GitHub repo. Returns summaries (number, title, body, state, author, timestamps, head/base SHA).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "limit": {
+                    "def": {
+                      "type": "optional",
+                      "innerType": {
+                        "def": {
+                          "type": "number",
+                          "checks": [
+                            {
+                              "def": {
+                                "type": "number",
+                                "check": "number_format",
+                                "abort": false,
+                                "format": "safeint"
+                              },
+                              "type": "number",
+                              "minValue": -9007199254740991,
+                              "maxValue": 9007199254740991,
+                              "isInt": true,
+                              "isFinite": true,
+                              "format": "safeint"
+                            },
+                            {}
+                          ]
+                        },
+                        "type": "number",
+                        "minValue": 0,
+                        "maxValue": 9007199254740991,
+                        "isInt": true,
+                        "isFinite": true,
+                        "format": "safeint"
+                      }
+                    },
+                    "type": "optional"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_pr_diff",
+            "description": "Fetch the raw unified diff (`diff --git ...`) for a given pull request.",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "pr_id": {
+                    "def": {
+                      "type": "number",
+                      "checks": [
+                        {
+                          "def": {
+                            "type": "number",
+                            "check": "number_format",
+                            "abort": false,
+                            "format": "safeint"
+                          },
+                          "type": "number",
+                          "minValue": -9007199254740991,
+                          "maxValue": 9007199254740991,
+                          "isInt": true,
+                          "isFinite": true,
+                          "format": "safeint"
+                        },
+                        {}
+                      ]
+                    },
+                    "type": "number",
+                    "minValue": 0,
+                    "maxValue": 9007199254740991,
+                    "isInt": true,
+                    "isFinite": true,
+                    "format": "safeint"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_pr_comments",
+            "description": "Fetch issue comments on a pull request (general PR discussion, not inline review comments).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "pr_id": {
+                    "def": {
+                      "type": "number",
+                      "checks": [
+                        {
+                          "def": {
+                            "type": "number",
+                            "check": "number_format",
+                            "abort": false,
+                            "format": "safeint"
+                          },
+                          "type": "number",
+                          "minValue": -9007199254740991,
+                          "maxValue": 9007199254740991,
+                          "isInt": true,
+                          "isFinite": true,
+                          "format": "safeint"
+                        },
+                        {}
+                      ]
+                    },
+                    "type": "number",
+                    "minValue": 0,
+                    "maxValue": 9007199254740991,
+                    "isInt": true,
+                    "isFinite": true,
+                    "format": "safeint"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_commit_history",
+            "description": "List commits on the default branch, optionally filtered by `since` (ISO 8601 timestamp).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "since": {
+                    "def": {
+                      "type": "optional",
+                      "innerType": {
+                        "def": {
+                          "type": "string"
+                        },
+                        "type": "string",
+                        "format": null,
+                        "minLength": null,
+                        "maxLength": null
+                      }
+                    },
+                    "type": "optional"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "emit_decision",
+            "description": "Declare an explicit decision point in your investigation.\nCall this BEFORE fetching information that depends on a choice you just made,\nso the trace records why you went one way and not another.\nFields:\n  decision: stable machine-readable identifier (snake_case), e.g. 'investigate_prs'\n  label: short human-readable label\n  reasoning: one sentence - why this option, not the alternatives\n  alternatives: optional list of other decision identifiers you considered",
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "decision": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "reasoning": {
+                  "type": "string"
+                },
+                "alternatives": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "decision",
+                "label",
+                "reasoning"
+              ]
+            }
+          }
+        ],
+        "params": {
+          "temperature": 0,
+          "max_tokens": 4096
+        }
+      },
+      "request_hash": "d3aeb83eb03f6785f701315a62b5a03ff4406010c69ca20c6592656d00db6e2e",
+      "response": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_2",
+            "name": "get_recent_prs",
+            "input": {
+              "repo": "cash-codes/checkout-service",
+              "limit": 20
+            }
+          }
+        ],
+        "stop_reason": "tool_use",
+        "model_served": "mock-model",
+        "request_id": "req-demo-hvj8izrd0ha",
+        "usage": {
+          "input_tokens": 100,
+          "output_tokens": 50
+        }
+      },
+      "diagnostics": {
+        "latency_ms": 0
+      }
+    },
+    {
+      "type": "tool_call",
+      "id": "ac761007-8375-4c87-a455-78239d4512f0",
+      "timestamp": 1778825515937,
+      "tool": "get_recent_prs",
+      "arguments": {
+        "repo": "cash-codes/checkout-service",
+        "limit": 20
+      },
+      "arguments_hash": "0ef73b742c9df04038fef6bdc2a9f47df9d5f79005fdee819fd674149d1199e3",
+      "result": {
+        "output": [
+          {
+            "number": 145,
+            "title": "Update README badges",
+            "body": "Add CI and coverage badges.",
+            "state": "closed",
+            "user": {
+              "login": "alice"
+            },
+            "created_at": "2026-05-08T10:00:00Z",
+            "head": {
+              "sha": "sha-145"
+            },
+            "base": {
+              "sha": "main-1"
+            }
+          },
+          {
+            "number": 144,
+            "title": "Bump dependencies",
+            "body": "Routine dependency bumps; no functional changes.",
+            "state": "closed",
+            "user": {
+              "login": "bob"
+            },
+            "created_at": "2026-05-07T14:32:00Z",
+            "head": {
+              "sha": "sha-144"
+            },
+            "base": {
+              "sha": "main-1"
+            }
+          },
+          {
+            "number": 143,
+            "title": "Fix typo in checkout error message",
+            "body": "Trivial copy fix.",
+            "state": "closed",
+            "user": {
+              "login": "carol"
+            },
+            "created_at": "2026-05-07T09:11:00Z",
+            "head": {
+              "sha": "sha-143"
+            },
+            "base": {
+              "sha": "main-1"
+            }
+          },
+          {
+            "number": 142,
+            "title": "Refactor user query for performance",
+            "body": "Inlines the user-lookup join, removes the cached prepared-statement path and switches to a single composed SELECT. Should be faster on cold cache.",
+            "state": "closed",
+            "user": {
+              "login": "dave"
+            },
+            "created_at": "2026-05-06T17:45:00Z",
+            "head": {
+              "sha": "sha-142"
+            },
+            "base": {
+              "sha": "main-1"
+            }
+          },
+          {
+            "number": 141,
+            "title": "Refactor order processing pipeline",
+            "body": "Splits the order-processing module into smaller services.",
+            "state": "closed",
+            "user": {
+              "login": "eve"
+            },
+            "created_at": "2026-05-06T11:20:00Z",
+            "head": {
+              "sha": "sha-141"
+            },
+            "base": {
+              "sha": "main-1"
+            }
+          },
+          {
+            "number": 140,
+            "title": "Add metrics dashboard config",
+            "body": "Adds Grafana dashboard JSON for tracking p95 latency.",
+            "state": "closed",
+            "user": {
+              "login": "alice"
+            },
+            "created_at": "2026-05-05T16:00:00Z",
+            "head": {
+              "sha": "sha-140"
+            },
+            "base": {
+              "sha": "main-1"
+            }
+          },
+          {
+            "number": 139,
+            "title": "Remove dead code in legacy adapter",
+            "body": "Deletes unused fallback path.",
+            "state": "closed",
+            "user": {
+              "login": "bob"
+            },
+            "created_at": "2026-05-05T10:00:00Z",
+            "head": {
+              "sha": "sha-139"
+            },
+            "base": {
+              "sha": "main-1"
+            }
+          },
+          {
+            "number": 138,
+            "title": "Add Redis caching layer for product catalog",
+            "body": "Introduces a Redis-backed cache for product-catalog reads with a 5-minute TTL. Cache-miss path falls back to Postgres.",
+            "state": "closed",
+            "user": {
+              "login": "carol"
+            },
+            "created_at": "2026-05-04T13:15:00Z",
+            "head": {
+              "sha": "sha-138"
+            },
+            "base": {
+              "sha": "main-1"
+            }
+          },
+          {
+            "number": 137,
+            "title": "Update CI workflow",
+            "body": "Bumps Node version in CI.",
+            "state": "closed",
+            "user": {
+              "login": "dave"
+            },
+            "created_at": "2026-05-04T09:00:00Z",
+            "head": {
+              "sha": "sha-137"
+            },
+            "base": {
+              "sha": "main-1"
+            }
+          },
+          {
+            "number": 136,
+            "title": "Documentation updates",
+            "body": "Misc doc improvements.",
+            "state": "closed",
+            "user": {
+              "login": "eve"
+            },
+            "created_at": "2026-05-03T17:00:00Z",
+            "head": {
+              "sha": "sha-136"
+            },
+            "base": {
+              "sha": "main-1"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "llm_call",
+      "id": "f42f4034-b6e4-481c-b6f1-3d6db5b2b2ac",
+      "timestamp": 1778825515937,
+      "request": {
+        "model": "claude-sonnet-4-6",
+        "system": "You are an investigation agent in the Adaptive Workspace runtime.\nYour job is to investigate a question by calling tools and explicitly declaring your decisions.\n\n# Tools available\n- get_recent_prs: List recent pull requests for a GitHub repo. Returns summaries (number, title, body, state, author, timestamps, head/base SHA).\n- get_pr_diff: Fetch the raw unified diff (`diff --git ...`) for a given pull request.\n- get_pr_comments: Fetch issue comments on a pull request (general PR discussion, not inline review comments).\n- get_commit_history: List commits on the default branch, optionally filtered by `since` (ISO 8601 timestamp).\n- emit_decision: Declare an explicit decision point in your investigation.\nCall this BEFORE fetching information that depends on a choice you just made,\nso the trace records why you went one way and not another.\nFields:\n  decision: stable machine-readable identifier (snake_case), e.g. 'investigate_prs'\n  label: short human-readable label\n  reasoning: one sentence - why this option, not the alternatives\n  alternatives: optional list of other decision identifiers you considered\n\n# How to work\n1. At each fork in your reasoning, call emit_decision BEFORE calling investigative tools.\n2. Call tools to gather evidence.\n3. Repeat: emit_decision → call tools → ...\n4. When you've reached a conclusion, output a final text message. Do not call more tools.",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Recent PRs to cash-codes/checkout-service have caused performance regressions. Investigate and identify the likely culprit."
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_1",
+                "name": "emit_decision",
+                "input": {
+                  "decision": "investigate_prs",
+                  "label": "Investigate recent PRs",
+                  "reasoning": "Most likely source of regression is recent merged code.",
+                  "alternatives": [
+                    "investigate_commits",
+                    "check_issues"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_1",
+                "content": "Decision recorded."
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_2",
+                "name": "get_recent_prs",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "limit": 20
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_2",
+                "content": "[{\"number\":145,\"title\":\"Update README badges\",\"body\":\"Add CI and coverage badges.\",\"state\":\"closed\",\"user\":{\"login\":\"alice\"},\"created_at\":\"2026-05-08T10:00:00Z\",\"head\":{\"sha\":\"sha-145\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":144,\"title\":\"Bump dependencies\",\"body\":\"Routine dependency bumps; no functional changes.\",\"state\":\"closed\",\"user\":{\"login\":\"bob\"},\"created_at\":\"2026-05-07T14:32:00Z\",\"head\":{\"sha\":\"sha-144\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":143,\"title\":\"Fix typo in checkout error message\",\"body\":\"Trivial copy fix.\",\"state\":\"closed\",\"user\":{\"login\":\"carol\"},\"created_at\":\"2026-05-07T09:11:00Z\",\"head\":{\"sha\":\"sha-143\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":142,\"title\":\"Refactor user query for performance\",\"body\":\"Inlines the user-lookup join, removes the cached prepared-statement path and switches to a single composed SELECT. Should be faster on cold cache.\",\"state\":\"closed\",\"user\":{\"login\":\"dave\"},\"created_at\":\"2026-05-06T17:45:00Z\",\"head\":{\"sha\":\"sha-142\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":141,\"title\":\"Refactor order processing pipeline\",\"body\":\"Splits the order-processing module into smaller services.\",\"state\":\"closed\",\"user\":{\"login\":\"eve\"},\"created_at\":\"2026-05-06T11:20:00Z\",\"head\":{\"sha\":\"sha-141\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":140,\"title\":\"Add metrics dashboard config\",\"body\":\"Adds Grafana dashboard JSON for tracking p95 latency.\",\"state\":\"closed\",\"user\":{\"login\":\"alice\"},\"created_at\":\"2026-05-05T16:00:00Z\",\"head\":{\"sha\":\"sha-140\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":139,\"title\":\"Remove dead code in legacy adapter\",\"body\":\"Deletes unused fallback path.\",\"state\":\"closed\",\"user\":{\"login\":\"bob\"},\"created_at\":\"2026-05-05T10:00:00Z\",\"head\":{\"sha\":\"sha-139\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":138,\"title\":\"Add Redis caching layer for product catalog\",\"body\":\"Introduces a Redis-backed cache for product-catalog reads with a 5-minute TTL. Cache-miss path falls back to Postgres.\",\"state\":\"closed\",\"user\":{\"login\":\"carol\"},\"created_at\":\"2026-05-04T13:15:00Z\",\"head\":{\"sha\":\"sha-138\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":137,\"title\":\"Update CI workflow\",\"body\":\"Bumps Node version in CI.\",\"state\":\"closed\",\"user\":{\"login\":\"dave\"},\"created_at\":\"2026-05-04T09:00:00Z\",\"head\":{\"sha\":\"sha-137\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":136,\"title\":\"Documentation updates\",\"body\":\"Misc doc improvements.\",\"state\":\"closed\",\"user\":{\"login\":\"eve\"},\"created_at\":\"2026-05-03T17:00:00Z\",\"head\":{\"sha\":\"sha-136\"},\"base\":{\"sha\":\"main-1\"}}]"
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_3",
+                "name": "get_pr_diff",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "pr_id": 142
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_3",
+                "content": "\"diff --git a/src/queries/user.ts b/src/queries/user.ts\\nindex 1a2b3c4..5d6e7f8 100644\\n--- a/src/queries/user.ts\\n+++ b/src/queries/user.ts\\n@@ -1,18 +1,12 @@\\n-import { pool, prepared } from \\\"./db\\\";\\n+import { pool } from \\\"./db\\\";\\n\\n-const getUserStmt = prepared(\\n-  \\\"SELECT u.* FROM users u WHERE u.id = $1\\\"\\n-);\\n-\\n export async function getUser(id: string) {\\n-  return getUserStmt.get(id);\\n+  const { rows } = await pool.query(\\n+    `SELECT u.id, u.email, u.created_at,\\n+            o.id AS order_id, o.total\\n+     FROM users u\\n+     LEFT JOIN orders o ON o.user_id = u.id\\n+     WHERE u.id = $1`,\\n+    [id]\\n+  );\\n+  return rows;\\n }\\n\""
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_4",
+                "name": "get_pr_comments",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "pr_id": 142
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_4",
+                "content": "[{\"id\":9001,\"user\":{\"login\":\"reviewer-1\"},\"body\":\"Removing the prepared-statement path will mean every query re-plans on Postgres. On hot paths under load this can show up as elevated p95.\",\"created_at\":\"2026-05-06T18:01:00Z\"},{\"id\":9002,\"user\":{\"login\":\"dave\"},\"body\":\"Good point, but Postgres plan cache should handle it for repeated queries.\",\"created_at\":\"2026-05-06T18:30:00Z\"}]"
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "PR #142 (Refactor user query for performance) likely caused the regression. It removes the cached prepared-statement path, forcing Postgres to re-plan every query - reviewer-1 raised exactly this concern in the PR thread."
+              }
+            ]
+          }
+        ],
+        "tools": [
+          {
+            "name": "get_recent_prs",
+            "description": "List recent pull requests for a GitHub repo. Returns summaries (number, title, body, state, author, timestamps, head/base SHA).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "limit": {
+                    "def": {
+                      "type": "optional",
+                      "innerType": {
+                        "def": {
+                          "type": "number",
+                          "checks": [
+                            {
+                              "def": {
+                                "type": "number",
+                                "check": "number_format",
+                                "abort": false,
+                                "format": "safeint"
+                              },
+                              "type": "number",
+                              "minValue": -9007199254740991,
+                              "maxValue": 9007199254740991,
+                              "isInt": true,
+                              "isFinite": true,
+                              "format": "safeint"
+                            },
+                            {}
+                          ]
+                        },
+                        "type": "number",
+                        "minValue": 0,
+                        "maxValue": 9007199254740991,
+                        "isInt": true,
+                        "isFinite": true,
+                        "format": "safeint"
+                      }
+                    },
+                    "type": "optional"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_pr_diff",
+            "description": "Fetch the raw unified diff (`diff --git ...`) for a given pull request.",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "pr_id": {
+                    "def": {
+                      "type": "number",
+                      "checks": [
+                        {
+                          "def": {
+                            "type": "number",
+                            "check": "number_format",
+                            "abort": false,
+                            "format": "safeint"
+                          },
+                          "type": "number",
+                          "minValue": -9007199254740991,
+                          "maxValue": 9007199254740991,
+                          "isInt": true,
+                          "isFinite": true,
+                          "format": "safeint"
+                        },
+                        {}
+                      ]
+                    },
+                    "type": "number",
+                    "minValue": 0,
+                    "maxValue": 9007199254740991,
+                    "isInt": true,
+                    "isFinite": true,
+                    "format": "safeint"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_pr_comments",
+            "description": "Fetch issue comments on a pull request (general PR discussion, not inline review comments).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "pr_id": {
+                    "def": {
+                      "type": "number",
+                      "checks": [
+                        {
+                          "def": {
+                            "type": "number",
+                            "check": "number_format",
+                            "abort": false,
+                            "format": "safeint"
+                          },
+                          "type": "number",
+                          "minValue": -9007199254740991,
+                          "maxValue": 9007199254740991,
+                          "isInt": true,
+                          "isFinite": true,
+                          "format": "safeint"
+                        },
+                        {}
+                      ]
+                    },
+                    "type": "number",
+                    "minValue": 0,
+                    "maxValue": 9007199254740991,
+                    "isInt": true,
+                    "isFinite": true,
+                    "format": "safeint"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_commit_history",
+            "description": "List commits on the default branch, optionally filtered by `since` (ISO 8601 timestamp).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "since": {
+                    "def": {
+                      "type": "optional",
+                      "innerType": {
+                        "def": {
+                          "type": "string"
+                        },
+                        "type": "string",
+                        "format": null,
+                        "minLength": null,
+                        "maxLength": null
+                      }
+                    },
+                    "type": "optional"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "emit_decision",
+            "description": "Declare an explicit decision point in your investigation.\nCall this BEFORE fetching information that depends on a choice you just made,\nso the trace records why you went one way and not another.\nFields:\n  decision: stable machine-readable identifier (snake_case), e.g. 'investigate_prs'\n  label: short human-readable label\n  reasoning: one sentence - why this option, not the alternatives\n  alternatives: optional list of other decision identifiers you considered",
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "decision": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "reasoning": {
+                  "type": "string"
+                },
+                "alternatives": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "decision",
+                "label",
+                "reasoning"
+              ]
+            }
+          }
+        ],
+        "params": {
+          "temperature": 0,
+          "max_tokens": 4096
+        }
+      },
+      "request_hash": "1212ec3c4bcd9ab7d7d0ca4c8268a60ab210dbbe3796f677d0aceb903ac3966f",
+      "response": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_3",
+            "name": "get_pr_diff",
+            "input": {
+              "repo": "cash-codes/checkout-service",
+              "pr_id": 142
+            }
+          }
+        ],
+        "stop_reason": "tool_use",
+        "model_served": "mock-model",
+        "request_id": "req-demo-duze33z42uf",
+        "usage": {
+          "input_tokens": 100,
+          "output_tokens": 50
+        }
+      },
+      "diagnostics": {
+        "latency_ms": 0
+      }
+    },
+    {
+      "type": "tool_call",
+      "id": "325a1b59-d88a-4f9d-af23-22e2046693d8",
+      "timestamp": 1778825515938,
+      "tool": "get_pr_diff",
+      "arguments": {
+        "repo": "cash-codes/checkout-service",
+        "pr_id": 142
+      },
+      "arguments_hash": "706eeda00c3d00a321dd33b5eadc3bf2da1ae55408236d022282536c48caaf42",
+      "result": {
+        "output": "diff --git a/src/queries/user.ts b/src/queries/user.ts\nindex 1a2b3c4..5d6e7f8 100644\n--- a/src/queries/user.ts\n+++ b/src/queries/user.ts\n@@ -1,18 +1,12 @@\n-import { pool, prepared } from \"./db\";\n+import { pool } from \"./db\";\n\n-const getUserStmt = prepared(\n-  \"SELECT u.* FROM users u WHERE u.id = $1\"\n-);\n-\n export async function getUser(id: string) {\n-  return getUserStmt.get(id);\n+  const { rows } = await pool.query(\n+    `SELECT u.id, u.email, u.created_at,\n+            o.id AS order_id, o.total\n+     FROM users u\n+     LEFT JOIN orders o ON o.user_id = u.id\n+     WHERE u.id = $1`,\n+    [id]\n+  );\n+  return rows;\n }\n"
+      }
+    },
+    {
+      "type": "llm_call",
+      "id": "71035533-1be8-4f11-a130-1c107bfe7b0f",
+      "timestamp": 1778825515939,
+      "request": {
+        "model": "claude-sonnet-4-6",
+        "system": "You are an investigation agent in the Adaptive Workspace runtime.\nYour job is to investigate a question by calling tools and explicitly declaring your decisions.\n\n# Tools available\n- get_recent_prs: List recent pull requests for a GitHub repo. Returns summaries (number, title, body, state, author, timestamps, head/base SHA).\n- get_pr_diff: Fetch the raw unified diff (`diff --git ...`) for a given pull request.\n- get_pr_comments: Fetch issue comments on a pull request (general PR discussion, not inline review comments).\n- get_commit_history: List commits on the default branch, optionally filtered by `since` (ISO 8601 timestamp).\n- emit_decision: Declare an explicit decision point in your investigation.\nCall this BEFORE fetching information that depends on a choice you just made,\nso the trace records why you went one way and not another.\nFields:\n  decision: stable machine-readable identifier (snake_case), e.g. 'investigate_prs'\n  label: short human-readable label\n  reasoning: one sentence - why this option, not the alternatives\n  alternatives: optional list of other decision identifiers you considered\n\n# How to work\n1. At each fork in your reasoning, call emit_decision BEFORE calling investigative tools.\n2. Call tools to gather evidence.\n3. Repeat: emit_decision → call tools → ...\n4. When you've reached a conclusion, output a final text message. Do not call more tools.",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Recent PRs to cash-codes/checkout-service have caused performance regressions. Investigate and identify the likely culprit."
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_1",
+                "name": "emit_decision",
+                "input": {
+                  "decision": "investigate_prs",
+                  "label": "Investigate recent PRs",
+                  "reasoning": "Most likely source of regression is recent merged code.",
+                  "alternatives": [
+                    "investigate_commits",
+                    "check_issues"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_1",
+                "content": "Decision recorded."
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_2",
+                "name": "get_recent_prs",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "limit": 20
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_2",
+                "content": "[{\"number\":145,\"title\":\"Update README badges\",\"body\":\"Add CI and coverage badges.\",\"state\":\"closed\",\"user\":{\"login\":\"alice\"},\"created_at\":\"2026-05-08T10:00:00Z\",\"head\":{\"sha\":\"sha-145\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":144,\"title\":\"Bump dependencies\",\"body\":\"Routine dependency bumps; no functional changes.\",\"state\":\"closed\",\"user\":{\"login\":\"bob\"},\"created_at\":\"2026-05-07T14:32:00Z\",\"head\":{\"sha\":\"sha-144\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":143,\"title\":\"Fix typo in checkout error message\",\"body\":\"Trivial copy fix.\",\"state\":\"closed\",\"user\":{\"login\":\"carol\"},\"created_at\":\"2026-05-07T09:11:00Z\",\"head\":{\"sha\":\"sha-143\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":142,\"title\":\"Refactor user query for performance\",\"body\":\"Inlines the user-lookup join, removes the cached prepared-statement path and switches to a single composed SELECT. Should be faster on cold cache.\",\"state\":\"closed\",\"user\":{\"login\":\"dave\"},\"created_at\":\"2026-05-06T17:45:00Z\",\"head\":{\"sha\":\"sha-142\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":141,\"title\":\"Refactor order processing pipeline\",\"body\":\"Splits the order-processing module into smaller services.\",\"state\":\"closed\",\"user\":{\"login\":\"eve\"},\"created_at\":\"2026-05-06T11:20:00Z\",\"head\":{\"sha\":\"sha-141\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":140,\"title\":\"Add metrics dashboard config\",\"body\":\"Adds Grafana dashboard JSON for tracking p95 latency.\",\"state\":\"closed\",\"user\":{\"login\":\"alice\"},\"created_at\":\"2026-05-05T16:00:00Z\",\"head\":{\"sha\":\"sha-140\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":139,\"title\":\"Remove dead code in legacy adapter\",\"body\":\"Deletes unused fallback path.\",\"state\":\"closed\",\"user\":{\"login\":\"bob\"},\"created_at\":\"2026-05-05T10:00:00Z\",\"head\":{\"sha\":\"sha-139\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":138,\"title\":\"Add Redis caching layer for product catalog\",\"body\":\"Introduces a Redis-backed cache for product-catalog reads with a 5-minute TTL. Cache-miss path falls back to Postgres.\",\"state\":\"closed\",\"user\":{\"login\":\"carol\"},\"created_at\":\"2026-05-04T13:15:00Z\",\"head\":{\"sha\":\"sha-138\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":137,\"title\":\"Update CI workflow\",\"body\":\"Bumps Node version in CI.\",\"state\":\"closed\",\"user\":{\"login\":\"dave\"},\"created_at\":\"2026-05-04T09:00:00Z\",\"head\":{\"sha\":\"sha-137\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":136,\"title\":\"Documentation updates\",\"body\":\"Misc doc improvements.\",\"state\":\"closed\",\"user\":{\"login\":\"eve\"},\"created_at\":\"2026-05-03T17:00:00Z\",\"head\":{\"sha\":\"sha-136\"},\"base\":{\"sha\":\"main-1\"}}]"
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_3",
+                "name": "get_pr_diff",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "pr_id": 142
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_3",
+                "content": "\"diff --git a/src/queries/user.ts b/src/queries/user.ts\\nindex 1a2b3c4..5d6e7f8 100644\\n--- a/src/queries/user.ts\\n+++ b/src/queries/user.ts\\n@@ -1,18 +1,12 @@\\n-import { pool, prepared } from \\\"./db\\\";\\n+import { pool } from \\\"./db\\\";\\n\\n-const getUserStmt = prepared(\\n-  \\\"SELECT u.* FROM users u WHERE u.id = $1\\\"\\n-);\\n-\\n export async function getUser(id: string) {\\n-  return getUserStmt.get(id);\\n+  const { rows } = await pool.query(\\n+    `SELECT u.id, u.email, u.created_at,\\n+            o.id AS order_id, o.total\\n+     FROM users u\\n+     LEFT JOIN orders o ON o.user_id = u.id\\n+     WHERE u.id = $1`,\\n+    [id]\\n+  );\\n+  return rows;\\n }\\n\""
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_4",
+                "name": "get_pr_comments",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "pr_id": 142
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_4",
+                "content": "[{\"id\":9001,\"user\":{\"login\":\"reviewer-1\"},\"body\":\"Removing the prepared-statement path will mean every query re-plans on Postgres. On hot paths under load this can show up as elevated p95.\",\"created_at\":\"2026-05-06T18:01:00Z\"},{\"id\":9002,\"user\":{\"login\":\"dave\"},\"body\":\"Good point, but Postgres plan cache should handle it for repeated queries.\",\"created_at\":\"2026-05-06T18:30:00Z\"}]"
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "PR #142 (Refactor user query for performance) likely caused the regression. It removes the cached prepared-statement path, forcing Postgres to re-plan every query - reviewer-1 raised exactly this concern in the PR thread."
+              }
+            ]
+          }
+        ],
+        "tools": [
+          {
+            "name": "get_recent_prs",
+            "description": "List recent pull requests for a GitHub repo. Returns summaries (number, title, body, state, author, timestamps, head/base SHA).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "limit": {
+                    "def": {
+                      "type": "optional",
+                      "innerType": {
+                        "def": {
+                          "type": "number",
+                          "checks": [
+                            {
+                              "def": {
+                                "type": "number",
+                                "check": "number_format",
+                                "abort": false,
+                                "format": "safeint"
+                              },
+                              "type": "number",
+                              "minValue": -9007199254740991,
+                              "maxValue": 9007199254740991,
+                              "isInt": true,
+                              "isFinite": true,
+                              "format": "safeint"
+                            },
+                            {}
+                          ]
+                        },
+                        "type": "number",
+                        "minValue": 0,
+                        "maxValue": 9007199254740991,
+                        "isInt": true,
+                        "isFinite": true,
+                        "format": "safeint"
+                      }
+                    },
+                    "type": "optional"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_pr_diff",
+            "description": "Fetch the raw unified diff (`diff --git ...`) for a given pull request.",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "pr_id": {
+                    "def": {
+                      "type": "number",
+                      "checks": [
+                        {
+                          "def": {
+                            "type": "number",
+                            "check": "number_format",
+                            "abort": false,
+                            "format": "safeint"
+                          },
+                          "type": "number",
+                          "minValue": -9007199254740991,
+                          "maxValue": 9007199254740991,
+                          "isInt": true,
+                          "isFinite": true,
+                          "format": "safeint"
+                        },
+                        {}
+                      ]
+                    },
+                    "type": "number",
+                    "minValue": 0,
+                    "maxValue": 9007199254740991,
+                    "isInt": true,
+                    "isFinite": true,
+                    "format": "safeint"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_pr_comments",
+            "description": "Fetch issue comments on a pull request (general PR discussion, not inline review comments).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "pr_id": {
+                    "def": {
+                      "type": "number",
+                      "checks": [
+                        {
+                          "def": {
+                            "type": "number",
+                            "check": "number_format",
+                            "abort": false,
+                            "format": "safeint"
+                          },
+                          "type": "number",
+                          "minValue": -9007199254740991,
+                          "maxValue": 9007199254740991,
+                          "isInt": true,
+                          "isFinite": true,
+                          "format": "safeint"
+                        },
+                        {}
+                      ]
+                    },
+                    "type": "number",
+                    "minValue": 0,
+                    "maxValue": 9007199254740991,
+                    "isInt": true,
+                    "isFinite": true,
+                    "format": "safeint"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_commit_history",
+            "description": "List commits on the default branch, optionally filtered by `since` (ISO 8601 timestamp).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "since": {
+                    "def": {
+                      "type": "optional",
+                      "innerType": {
+                        "def": {
+                          "type": "string"
+                        },
+                        "type": "string",
+                        "format": null,
+                        "minLength": null,
+                        "maxLength": null
+                      }
+                    },
+                    "type": "optional"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "emit_decision",
+            "description": "Declare an explicit decision point in your investigation.\nCall this BEFORE fetching information that depends on a choice you just made,\nso the trace records why you went one way and not another.\nFields:\n  decision: stable machine-readable identifier (snake_case), e.g. 'investigate_prs'\n  label: short human-readable label\n  reasoning: one sentence - why this option, not the alternatives\n  alternatives: optional list of other decision identifiers you considered",
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "decision": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "reasoning": {
+                  "type": "string"
+                },
+                "alternatives": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "decision",
+                "label",
+                "reasoning"
+              ]
+            }
+          }
+        ],
+        "params": {
+          "temperature": 0,
+          "max_tokens": 4096
+        }
+      },
+      "request_hash": "08fa8380001aa8c8a09c138194fc8059c482d1195b1e33cf4a56f4abc1437977",
+      "response": {
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_4",
+            "name": "get_pr_comments",
+            "input": {
+              "repo": "cash-codes/checkout-service",
+              "pr_id": 142
+            }
+          }
+        ],
+        "stop_reason": "tool_use",
+        "model_served": "mock-model",
+        "request_id": "req-demo-lszbqfww0zn",
+        "usage": {
+          "input_tokens": 100,
+          "output_tokens": 50
+        }
+      },
+      "diagnostics": {
+        "latency_ms": 0
+      }
+    },
+    {
+      "type": "tool_call",
+      "id": "8c120624-2390-4d27-b28d-052193a0db13",
+      "timestamp": 1778825515940,
+      "tool": "get_pr_comments",
+      "arguments": {
+        "repo": "cash-codes/checkout-service",
+        "pr_id": 142
+      },
+      "arguments_hash": "706eeda00c3d00a321dd33b5eadc3bf2da1ae55408236d022282536c48caaf42",
+      "result": {
+        "output": [
+          {
+            "id": 9001,
+            "user": {
+              "login": "reviewer-1"
+            },
+            "body": "Removing the prepared-statement path will mean every query re-plans on Postgres. On hot paths under load this can show up as elevated p95.",
+            "created_at": "2026-05-06T18:01:00Z"
+          },
+          {
+            "id": 9002,
+            "user": {
+              "login": "dave"
+            },
+            "body": "Good point, but Postgres plan cache should handle it for repeated queries.",
+            "created_at": "2026-05-06T18:30:00Z"
+          }
+        ]
+      }
+    },
+    {
+      "type": "llm_call",
+      "id": "57fcfca5-cc68-47a2-bb8f-98e8616b9500",
+      "timestamp": 1778825515940,
+      "request": {
+        "model": "claude-sonnet-4-6",
+        "system": "You are an investigation agent in the Adaptive Workspace runtime.\nYour job is to investigate a question by calling tools and explicitly declaring your decisions.\n\n# Tools available\n- get_recent_prs: List recent pull requests for a GitHub repo. Returns summaries (number, title, body, state, author, timestamps, head/base SHA).\n- get_pr_diff: Fetch the raw unified diff (`diff --git ...`) for a given pull request.\n- get_pr_comments: Fetch issue comments on a pull request (general PR discussion, not inline review comments).\n- get_commit_history: List commits on the default branch, optionally filtered by `since` (ISO 8601 timestamp).\n- emit_decision: Declare an explicit decision point in your investigation.\nCall this BEFORE fetching information that depends on a choice you just made,\nso the trace records why you went one way and not another.\nFields:\n  decision: stable machine-readable identifier (snake_case), e.g. 'investigate_prs'\n  label: short human-readable label\n  reasoning: one sentence - why this option, not the alternatives\n  alternatives: optional list of other decision identifiers you considered\n\n# How to work\n1. At each fork in your reasoning, call emit_decision BEFORE calling investigative tools.\n2. Call tools to gather evidence.\n3. Repeat: emit_decision → call tools → ...\n4. When you've reached a conclusion, output a final text message. Do not call more tools.",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Recent PRs to cash-codes/checkout-service have caused performance regressions. Investigate and identify the likely culprit."
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_1",
+                "name": "emit_decision",
+                "input": {
+                  "decision": "investigate_prs",
+                  "label": "Investigate recent PRs",
+                  "reasoning": "Most likely source of regression is recent merged code.",
+                  "alternatives": [
+                    "investigate_commits",
+                    "check_issues"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_1",
+                "content": "Decision recorded."
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_2",
+                "name": "get_recent_prs",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "limit": 20
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_2",
+                "content": "[{\"number\":145,\"title\":\"Update README badges\",\"body\":\"Add CI and coverage badges.\",\"state\":\"closed\",\"user\":{\"login\":\"alice\"},\"created_at\":\"2026-05-08T10:00:00Z\",\"head\":{\"sha\":\"sha-145\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":144,\"title\":\"Bump dependencies\",\"body\":\"Routine dependency bumps; no functional changes.\",\"state\":\"closed\",\"user\":{\"login\":\"bob\"},\"created_at\":\"2026-05-07T14:32:00Z\",\"head\":{\"sha\":\"sha-144\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":143,\"title\":\"Fix typo in checkout error message\",\"body\":\"Trivial copy fix.\",\"state\":\"closed\",\"user\":{\"login\":\"carol\"},\"created_at\":\"2026-05-07T09:11:00Z\",\"head\":{\"sha\":\"sha-143\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":142,\"title\":\"Refactor user query for performance\",\"body\":\"Inlines the user-lookup join, removes the cached prepared-statement path and switches to a single composed SELECT. Should be faster on cold cache.\",\"state\":\"closed\",\"user\":{\"login\":\"dave\"},\"created_at\":\"2026-05-06T17:45:00Z\",\"head\":{\"sha\":\"sha-142\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":141,\"title\":\"Refactor order processing pipeline\",\"body\":\"Splits the order-processing module into smaller services.\",\"state\":\"closed\",\"user\":{\"login\":\"eve\"},\"created_at\":\"2026-05-06T11:20:00Z\",\"head\":{\"sha\":\"sha-141\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":140,\"title\":\"Add metrics dashboard config\",\"body\":\"Adds Grafana dashboard JSON for tracking p95 latency.\",\"state\":\"closed\",\"user\":{\"login\":\"alice\"},\"created_at\":\"2026-05-05T16:00:00Z\",\"head\":{\"sha\":\"sha-140\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":139,\"title\":\"Remove dead code in legacy adapter\",\"body\":\"Deletes unused fallback path.\",\"state\":\"closed\",\"user\":{\"login\":\"bob\"},\"created_at\":\"2026-05-05T10:00:00Z\",\"head\":{\"sha\":\"sha-139\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":138,\"title\":\"Add Redis caching layer for product catalog\",\"body\":\"Introduces a Redis-backed cache for product-catalog reads with a 5-minute TTL. Cache-miss path falls back to Postgres.\",\"state\":\"closed\",\"user\":{\"login\":\"carol\"},\"created_at\":\"2026-05-04T13:15:00Z\",\"head\":{\"sha\":\"sha-138\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":137,\"title\":\"Update CI workflow\",\"body\":\"Bumps Node version in CI.\",\"state\":\"closed\",\"user\":{\"login\":\"dave\"},\"created_at\":\"2026-05-04T09:00:00Z\",\"head\":{\"sha\":\"sha-137\"},\"base\":{\"sha\":\"main-1\"}},{\"number\":136,\"title\":\"Documentation updates\",\"body\":\"Misc doc improvements.\",\"state\":\"closed\",\"user\":{\"login\":\"eve\"},\"created_at\":\"2026-05-03T17:00:00Z\",\"head\":{\"sha\":\"sha-136\"},\"base\":{\"sha\":\"main-1\"}}]"
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_3",
+                "name": "get_pr_diff",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "pr_id": 142
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_3",
+                "content": "\"diff --git a/src/queries/user.ts b/src/queries/user.ts\\nindex 1a2b3c4..5d6e7f8 100644\\n--- a/src/queries/user.ts\\n+++ b/src/queries/user.ts\\n@@ -1,18 +1,12 @@\\n-import { pool, prepared } from \\\"./db\\\";\\n+import { pool } from \\\"./db\\\";\\n\\n-const getUserStmt = prepared(\\n-  \\\"SELECT u.* FROM users u WHERE u.id = $1\\\"\\n-);\\n-\\n export async function getUser(id: string) {\\n-  return getUserStmt.get(id);\\n+  const { rows } = await pool.query(\\n+    `SELECT u.id, u.email, u.created_at,\\n+            o.id AS order_id, o.total\\n+     FROM users u\\n+     LEFT JOIN orders o ON o.user_id = u.id\\n+     WHERE u.id = $1`,\\n+    [id]\\n+  );\\n+  return rows;\\n }\\n\""
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_4",
+                "name": "get_pr_comments",
+                "input": {
+                  "repo": "cash-codes/checkout-service",
+                  "pr_id": 142
+                }
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "toolu_4",
+                "content": "[{\"id\":9001,\"user\":{\"login\":\"reviewer-1\"},\"body\":\"Removing the prepared-statement path will mean every query re-plans on Postgres. On hot paths under load this can show up as elevated p95.\",\"created_at\":\"2026-05-06T18:01:00Z\"},{\"id\":9002,\"user\":{\"login\":\"dave\"},\"body\":\"Good point, but Postgres plan cache should handle it for repeated queries.\",\"created_at\":\"2026-05-06T18:30:00Z\"}]"
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "PR #142 (Refactor user query for performance) likely caused the regression. It removes the cached prepared-statement path, forcing Postgres to re-plan every query - reviewer-1 raised exactly this concern in the PR thread."
+              }
+            ]
+          }
+        ],
+        "tools": [
+          {
+            "name": "get_recent_prs",
+            "description": "List recent pull requests for a GitHub repo. Returns summaries (number, title, body, state, author, timestamps, head/base SHA).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "limit": {
+                    "def": {
+                      "type": "optional",
+                      "innerType": {
+                        "def": {
+                          "type": "number",
+                          "checks": [
+                            {
+                              "def": {
+                                "type": "number",
+                                "check": "number_format",
+                                "abort": false,
+                                "format": "safeint"
+                              },
+                              "type": "number",
+                              "minValue": -9007199254740991,
+                              "maxValue": 9007199254740991,
+                              "isInt": true,
+                              "isFinite": true,
+                              "format": "safeint"
+                            },
+                            {}
+                          ]
+                        },
+                        "type": "number",
+                        "minValue": 0,
+                        "maxValue": 9007199254740991,
+                        "isInt": true,
+                        "isFinite": true,
+                        "format": "safeint"
+                      }
+                    },
+                    "type": "optional"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_pr_diff",
+            "description": "Fetch the raw unified diff (`diff --git ...`) for a given pull request.",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "pr_id": {
+                    "def": {
+                      "type": "number",
+                      "checks": [
+                        {
+                          "def": {
+                            "type": "number",
+                            "check": "number_format",
+                            "abort": false,
+                            "format": "safeint"
+                          },
+                          "type": "number",
+                          "minValue": -9007199254740991,
+                          "maxValue": 9007199254740991,
+                          "isInt": true,
+                          "isFinite": true,
+                          "format": "safeint"
+                        },
+                        {}
+                      ]
+                    },
+                    "type": "number",
+                    "minValue": 0,
+                    "maxValue": 9007199254740991,
+                    "isInt": true,
+                    "isFinite": true,
+                    "format": "safeint"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_pr_comments",
+            "description": "Fetch issue comments on a pull request (general PR discussion, not inline review comments).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "pr_id": {
+                    "def": {
+                      "type": "number",
+                      "checks": [
+                        {
+                          "def": {
+                            "type": "number",
+                            "check": "number_format",
+                            "abort": false,
+                            "format": "safeint"
+                          },
+                          "type": "number",
+                          "minValue": -9007199254740991,
+                          "maxValue": 9007199254740991,
+                          "isInt": true,
+                          "isFinite": true,
+                          "format": "safeint"
+                        },
+                        {}
+                      ]
+                    },
+                    "type": "number",
+                    "minValue": 0,
+                    "maxValue": 9007199254740991,
+                    "isInt": true,
+                    "isFinite": true,
+                    "format": "safeint"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "get_commit_history",
+            "description": "List commits on the default branch, optionally filtered by `since` (ISO 8601 timestamp).",
+            "input_schema": {
+              "def": {
+                "type": "object",
+                "shape": {
+                  "repo": {
+                    "def": {
+                      "type": "string"
+                    },
+                    "type": "string",
+                    "format": null,
+                    "minLength": null,
+                    "maxLength": null
+                  },
+                  "since": {
+                    "def": {
+                      "type": "optional",
+                      "innerType": {
+                        "def": {
+                          "type": "string"
+                        },
+                        "type": "string",
+                        "format": null,
+                        "minLength": null,
+                        "maxLength": null
+                      }
+                    },
+                    "type": "optional"
+                  }
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "emit_decision",
+            "description": "Declare an explicit decision point in your investigation.\nCall this BEFORE fetching information that depends on a choice you just made,\nso the trace records why you went one way and not another.\nFields:\n  decision: stable machine-readable identifier (snake_case), e.g. 'investigate_prs'\n  label: short human-readable label\n  reasoning: one sentence - why this option, not the alternatives\n  alternatives: optional list of other decision identifiers you considered",
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "decision": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "reasoning": {
+                  "type": "string"
+                },
+                "alternatives": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "decision",
+                "label",
+                "reasoning"
+              ]
+            }
+          }
+        ],
+        "params": {
+          "temperature": 0,
+          "max_tokens": 4096
+        }
+      },
+      "request_hash": "41302d18360680fabfcff968345fb5a0ccc5f6b1d57d59430c78fee9ac2a7c60",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "PR #142 (Refactor user query for performance) likely caused the regression. It removes the cached prepared-statement path, forcing Postgres to re-plan every query - reviewer-1 raised exactly this concern in the PR thread."
+          }
+        ],
+        "stop_reason": "end_turn",
+        "model_served": "mock-model",
+        "request_id": "req-demo-7chy6oqwmjo",
+        "usage": {
+          "input_tokens": 100,
+          "output_tokens": 50
+        }
+      },
+      "diagnostics": {
+        "latency_ms": 0
+      }
+    },
+    {
+      "type": "runtime",
+      "id": "4196d6cf-9a27-4bc2-9fbb-7eda006c297f",
+      "timestamp": 1778825515932,
+      "kind": "random_uuid",
+      "value": "569b2d9a-5494-441c-b26b-52c10f257b49"
+    },
+    {
+      "type": "runtime",
+      "id": "63cbbd71-14ce-45cb-a675-933cb38b9119",
+      "timestamp": 1778825515932,
+      "kind": "now",
+      "value": 1778825515932
+    },
+    {
+      "type": "runtime",
+      "id": "95d58b46-2a62-4373-a8ba-acf8f34dbc59",
+      "timestamp": 1778825515933,
+      "kind": "now",
+      "value": 1778825515933
+    },
+    {
+      "type": "runtime",
+      "id": "bbf9b49c-df9e-4333-8f1d-d294b69a74bf",
+      "timestamp": 1778825515933,
+      "kind": "now",
+      "value": 1778825515933
+    },
+    {
+      "type": "runtime",
+      "id": "75bfd028-7634-48a2-a044-f27cea224101",
+      "timestamp": 1778825515933,
+      "kind": "random_uuid",
+      "value": "402f5e98-6adf-4848-9c2a-8d68abcbc42b"
+    },
+    {
+      "type": "runtime",
+      "id": "c9abcc6b-1825-43b7-a338-990326362276",
+      "timestamp": 1778825515933,
+      "kind": "random_uuid",
+      "value": "2644187a-c94a-4d82-88f4-484f3a74bcda"
+    },
+    {
+      "type": "runtime",
+      "id": "58963c9d-da95-4b3f-b4e1-134b1e461b25",
+      "timestamp": 1778825515933,
+      "kind": "now",
+      "value": 1778825515933
+    },
+    {
+      "type": "runtime",
+      "id": "ffaceadd-f81c-4f19-a97d-f89e30591fa5",
+      "timestamp": 1778825515934,
+      "kind": "now",
+      "value": 1778825515934
+    },
+    {
+      "type": "runtime",
+      "id": "f9fa3d6c-31bd-419f-92ae-c66c2e7a8594",
+      "timestamp": 1778825515934,
+      "kind": "now",
+      "value": 1778825515934
+    },
+    {
+      "type": "runtime",
+      "id": "80d62033-7c54-4c8b-8590-7d11f77e1f1b",
+      "timestamp": 1778825515934,
+      "kind": "random_uuid",
+      "value": "8187bda9-1fde-4275-8193-0151ce918753"
+    },
+    {
+      "type": "runtime",
+      "id": "6d37af90-2cb9-4c9e-a341-9c5b000677c5",
+      "timestamp": 1778825515937,
+      "kind": "random_uuid",
+      "value": "ac761007-8375-4c87-a455-78239d4512f0"
+    },
+    {
+      "type": "runtime",
+      "id": "dc496eaf-0ab8-4697-ae5b-0101a2098d96",
+      "timestamp": 1778825515937,
+      "kind": "now",
+      "value": 1778825515937
+    },
+    {
+      "type": "runtime",
+      "id": "c084aba4-1d99-4ee7-a221-8b509cd00e4d",
+      "timestamp": 1778825515937,
+      "kind": "now",
+      "value": 1778825515937
+    },
+    {
+      "type": "runtime",
+      "id": "9e99f017-00fd-4c89-aede-79e45fb9775b",
+      "timestamp": 1778825515937,
+      "kind": "now",
+      "value": 1778825515937
+    },
+    {
+      "type": "runtime",
+      "id": "81f2f266-e85a-464d-a228-c5363aae2846",
+      "timestamp": 1778825515937,
+      "kind": "random_uuid",
+      "value": "f42f4034-b6e4-481c-b6f1-3d6db5b2b2ac"
+    },
+    {
+      "type": "runtime",
+      "id": "667ed279-9211-4026-869a-2ae45b947cdb",
+      "timestamp": 1778825515938,
+      "kind": "random_uuid",
+      "value": "325a1b59-d88a-4f9d-af23-22e2046693d8"
+    },
+    {
+      "type": "runtime",
+      "id": "15f6d21d-278f-4fab-a15a-1391a3563fcb",
+      "timestamp": 1778825515938,
+      "kind": "now",
+      "value": 1778825515938
+    },
+    {
+      "type": "runtime",
+      "id": "f4ad5d28-80ce-49c2-92d0-dc0e2d28a1d2",
+      "timestamp": 1778825515939,
+      "kind": "now",
+      "value": 1778825515939
+    },
+    {
+      "type": "runtime",
+      "id": "f29bcdd8-cbd9-4ea8-9592-1aa6eb877b51",
+      "timestamp": 1778825515939,
+      "kind": "now",
+      "value": 1778825515939
+    },
+    {
+      "type": "runtime",
+      "id": "0a350f19-ea94-4d83-8cbe-2ec1ab7d783b",
+      "timestamp": 1778825515939,
+      "kind": "random_uuid",
+      "value": "71035533-1be8-4f11-a130-1c107bfe7b0f"
+    },
+    {
+      "type": "runtime",
+      "id": "3c0bc660-f2b9-4cee-8194-8a9553c6f000",
+      "timestamp": 1778825515940,
+      "kind": "random_uuid",
+      "value": "8c120624-2390-4d27-b28d-052193a0db13"
+    },
+    {
+      "type": "runtime",
+      "id": "9862843a-87f7-47bf-a20b-596b31b13258",
+      "timestamp": 1778825515940,
+      "kind": "now",
+      "value": 1778825515940
+    },
+    {
+      "type": "runtime",
+      "id": "4c792ac3-497c-4cba-bb94-7c57a9904437",
+      "timestamp": 1778825515940,
+      "kind": "now",
+      "value": 1778825515940
+    },
+    {
+      "type": "runtime",
+      "id": "962036fd-d9f7-4080-a0cb-d3261c9af69a",
+      "timestamp": 1778825515940,
+      "kind": "now",
+      "value": 1778825515940
+    },
+    {
+      "type": "runtime",
+      "id": "e2eb495f-6ca2-4009-b5b2-60ee2bde25f7",
+      "timestamp": 1778825515940,
+      "kind": "random_uuid",
+      "value": "57fcfca5-cc68-47a2-bb8f-98e8616b9500"
+    }
+  ]
+}
