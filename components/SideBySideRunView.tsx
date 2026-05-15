@@ -5,19 +5,27 @@ import Link from "next/link";
 import type { Event } from "@/lib/events";
 import type { Run } from "@/lib/storage/json-store";
 import { EventCard } from "@/components/EventCard";
+import { EventInspector } from "@/components/EventInspector";
 
 type Props = { base: Run; fork: Run };
+
+type Side = "base" | "fork";
 
 type TypedEvent = Exclude<Event, { type: "runtime" }>;
 
 type Pair = {
   base: TypedEvent | null;
   fork: TypedEvent | null;
+  // True only for the FIRST pair where divergence is detected (so the
+  // "Divergence point" banner appears exactly once).
   divergent: boolean;
-  // True when both sides have the same event id but the content was edited
-  // (the fork point itself, e.g. a substituted tool_output or decision).
-  // Distinguished from divergent-by-different-ids (post-fork drift) so the UI
-  // can show a clearer cue.
+  // True for every pair at or after the divergence point — drives the
+  // amber background tint on both cells, making the post-fork area
+  // visible at a glance.
+  postFork: boolean;
+  // True when both sides have the same event id but content was edited
+  // (the fork point itself). Distinguished from divergent-by-different-ids
+  // so the banner can label it.
   edited: boolean;
 };
 
@@ -42,10 +50,17 @@ function align(base: Run, fork: Run): Pair[] {
         base: bi,
         fork: fi,
         divergent: true,
+        postFork: true,
         edited: Boolean(sameId && !sameContent),
       });
     } else {
-      pairs.push({ base: bi, fork: fi, divergent: false, edited: false });
+      pairs.push({
+        base: bi,
+        fork: fi,
+        divergent: false,
+        postFork: diverged,
+        edited: false,
+      });
     }
   }
   return pairs;
@@ -53,8 +68,29 @@ function align(base: Run, fork: Run): Pair[] {
 
 export function SideBySideRunView({ base, fork }: Props) {
   const params = useSearchParams();
-  const selectedId = params?.get("event") ?? null;
+  const selectedEventId = params?.get("event") ?? null;
+  const selectedSide = (params?.get("side") as Side | null) ?? null;
   const pairs = align(base, fork);
+
+  // Resolve the selected event by (id, side). Same id can exist on both
+  // sides (pre-fork events are copied verbatim; the fork point keeps the
+  // same id with edited content), so the side discriminator matters.
+  let selectedEvent: TypedEvent | null = null;
+  let selectedRunId: string = fork.metadata.id;
+  if (selectedEventId && selectedSide) {
+    for (const p of pairs) {
+      if (selectedSide === "base" && p.base?.id === selectedEventId) {
+        selectedEvent = p.base;
+        selectedRunId = base.metadata.id;
+        break;
+      }
+      if (selectedSide === "fork" && p.fork?.id === selectedEventId) {
+        selectedEvent = p.fork;
+        selectedRunId = fork.metadata.id;
+        break;
+      }
+    }
+  }
 
   return (
     <div className="border-t border-gray-200">
@@ -75,37 +111,73 @@ export function SideBySideRunView({ base, fork }: Props) {
               </div>
             )}
             <div className="grid grid-cols-2 divide-x divide-gray-100">
-              <div className={p.divergent ? "bg-amber-50/40 ring-1 ring-inset ring-amber-200" : ""}>
+              <div className={p.postFork ? "bg-amber-50" : ""}>
                 {p.base && (
-                  <CardCell event={p.base} runId={base.metadata.id} selectedId={selectedId} />
+                  <CardCell
+                    event={p.base}
+                    side="base"
+                    forkRunId={fork.metadata.id}
+                    selectedEventId={selectedEventId}
+                    selectedSide={selectedSide}
+                  />
                 )}
               </div>
-              <div className={p.divergent ? "bg-amber-50/40 ring-1 ring-inset ring-amber-200" : ""}>
+              <div className={p.postFork ? "bg-amber-50" : ""}>
                 {p.fork && (
-                  <CardCell event={p.fork} runId={fork.metadata.id} selectedId={selectedId} />
+                  <CardCell
+                    event={p.fork}
+                    side="fork"
+                    forkRunId={fork.metadata.id}
+                    selectedEventId={selectedEventId}
+                    selectedSide={selectedSide}
+                  />
                 )}
               </div>
             </div>
           </li>
         ))}
       </ol>
+
+      {/* Inspector panel — same component the single-run view uses, swaps
+          content based on which cell was clicked. Stays on the same page
+          (no navigation), so the side-by-side timeline remains visible. */}
+      <div className="border-t border-gray-200 bg-white">
+        <div className="border-b border-gray-100 px-4 py-2 text-xs font-medium uppercase tracking-wide text-gray-500">
+          Inspector
+          {selectedEvent && selectedSide && (
+            <span className="ml-2 font-normal normal-case tracking-normal text-gray-400">
+              · {selectedSide === "base" ? "from base" : "from fork"}
+            </span>
+          )}
+        </div>
+        <div className="p-4">
+          <EventInspector event={selectedEvent} baseRunId={selectedRunId} />
+        </div>
+      </div>
     </div>
   );
 }
 
 function CardCell({
   event,
-  runId,
-  selectedId,
+  side,
+  forkRunId,
+  selectedEventId,
+  selectedSide,
 }: {
   event: TypedEvent;
-  runId: string;
-  selectedId: string | null;
+  side: Side;
+  forkRunId: string;
+  selectedEventId: string | null;
+  selectedSide: Side | null;
 }) {
-  const isSelected = event.id === selectedId;
+  const isSelected = event.id === selectedEventId && side === selectedSide;
   return (
     <Link
-      href={`/runs/${runId}?event=${event.id}`}
+      // Always stays on the fork's page (the side-by-side host), so clicks
+      // from either column update the inspector without losing the side-by-
+      // side context.
+      href={`/runs/${forkRunId}?event=${event.id}&side=${side}`}
       aria-current={isSelected ? "true" : undefined}
       scroll={false}
       className="block"

@@ -185,6 +185,89 @@ index 1111111..2222222 100644
    }
 `,
     },
+    {
+      arguments: { repo: REPO, pr_id: 145 },
+      result: `diff --git a/README.md b/README.md
+index aaaaaaa..bbbbbbb 100644
+--- a/README.md
++++ b/README.md
+@@ -1,3 +1,5 @@
+ # checkout-service
++
++![CI](badges/ci.svg) ![Coverage](badges/cov.svg)
+`,
+    },
+    {
+      arguments: { repo: REPO, pr_id: 143 },
+      result: `diff --git a/src/checkout/errors.ts b/src/checkout/errors.ts
+index ccccccc..ddddddd 100644
+--- a/src/checkout/errors.ts
++++ b/src/checkout/errors.ts
+@@ -12,7 +12,7 @@ export function paymentFailed(reason: string) {
+-  throw new Error(\`Payement failed: \${reason}\`);
++  throw new Error(\`Payment failed: \${reason}\`);
+ }
+`,
+    },
+    {
+      arguments: { repo: REPO, pr_id: 141 },
+      result: `diff --git a/src/order/processor.ts b/src/order/services/processor.ts
+similarity index 100%
+rename from src/order/processor.ts
+rename to src/order/services/processor.ts
+`,
+    },
+    {
+      arguments: { repo: REPO, pr_id: 140 },
+      result: `diff --git a/grafana/dashboards/p95-latency.json b/grafana/dashboards/p95-latency.json
+new file mode 100644
+index 0000000..eeeeeee
+--- /dev/null
++++ b/grafana/dashboards/p95-latency.json
+@@ -0,0 +1,3 @@
++{
++  "title": "p95 latency by endpoint", "panels": []
++}
+`,
+    },
+    {
+      arguments: { repo: REPO, pr_id: 139 },
+      result: `diff --git a/src/legacy/adapter.ts b/src/legacy/adapter.ts
+index fffffff..ggggggg 100644
+--- a/src/legacy/adapter.ts
++++ b/src/legacy/adapter.ts
+@@ -42,18 +42,0 @@ export class LegacyAdapter {
+-  // Fallback path for old API version - unused since 2025.
+-  private legacyV1Fallback(req: Request) {
+-    // ...18 lines deleted...
+-  }
+ }
+`,
+    },
+    {
+      arguments: { repo: REPO, pr_id: 137 },
+      result: `diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index hhhhhhh..iiiiiii 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -10,7 +10,7 @@ jobs:
+     - uses: actions/setup-node@v4
+       with:
+-        node-version: 20
++        node-version: 22
+`,
+    },
+    {
+      arguments: { repo: REPO, pr_id: 136 },
+      result: `diff --git a/docs/setup.md b/docs/setup.md
+index jjjjjjj..kkkkkkk 100644
+--- a/docs/setup.md
++++ b/docs/setup.md
+@@ -5,4 +5,4 @@ Prerequisites: Node 20+.
+-Clone the repo and run \`pnpm install\`.
++Clone the repo and run \`npm install\`.
+`,
+    },
   ],
 
   get_pr_comments: [
@@ -222,6 +305,16 @@ index 1111111..2222222 100644
         },
       ],
     },
+    // Innocuous PRs have no review discussion of note — empty arrays so the
+    // live agent's get_pr_comments calls succeed during fork exploration.
+    { arguments: { repo: REPO, pr_id: 145 }, result: [] },
+    { arguments: { repo: REPO, pr_id: 144 }, result: [] },
+    { arguments: { repo: REPO, pr_id: 143 }, result: [] },
+    { arguments: { repo: REPO, pr_id: 141 }, result: [] },
+    { arguments: { repo: REPO, pr_id: 140 }, result: [] },
+    { arguments: { repo: REPO, pr_id: 139 }, result: [] },
+    { arguments: { repo: REPO, pr_id: 137 }, result: [] },
+    { arguments: { repo: REPO, pr_id: 136 }, result: [] },
   ],
 
   get_commit_history: [

@@ -1,20 +1,20 @@
 {
   "metadata": {
     "id": "demo-fork",
-    "created_at": 1778681548273,
+    "created_at": 1778825516870,
     "workflow": "github-investigation",
     "base_run_id": "demo-run",
     "fork_point": {
-      "event_id": "b67c6364-c2e6-4441-9bd7-323005e8df95"
+      "event_id": "325a1b59-d88a-4f9d-af23-22e2046693d8"
     }
   },
   "events": [
     {
       "type": "llm_call",
-      "id": "d0fca846-030d-4031-9c5b-16116b655b21",
-      "timestamp": 1778679174015,
+      "id": "402f5e98-6adf-4848-9c2a-8d68abcbc42b",
+      "timestamp": 1778825515933,
       "request": {
-        "model": "mock-model",
+        "model": "claude-sonnet-4-6",
         "system": "You are an investigation agent in the Adaptive Workspace runtime.\nYour job is to investigate a question by calling tools and explicitly declaring your decisions.\n\n# Tools available\n- get_recent_prs: List recent pull requests for a GitHub repo. Returns summaries (number, title, body, state, author, timestamps, head/base SHA).\n- get_pr_diff: Fetch the raw unified diff (`diff --git ...`) for a given pull request.\n- get_pr_comments: Fetch issue comments on a pull request (general PR discussion, not inline review comments).\n- get_commit_history: List commits on the default branch, optionally filtered by `since` (ISO 8601 timestamp).\n- emit_decision: Declare an explicit decision point in your investigation.\nCall this BEFORE fetching information that depends on a choice you just made,\nso the trace records why you went one way and not another.\nFields:\n  decision: stable machine-readable identifier (snake_case), e.g. 'investigate_prs'\n  label: short human-readable label\n  reasoning: one sentence — why this option, not the alternatives\n  alternatives: optional list of other decision identifiers you considered\n\n# How to work\n1. At each fork in your reasoning, call emit_decision BEFORE calling investigative tools.\n2. Call tools to gather evidence.\n3. Repeat: emit_decision → call tools → ...\n4. When you've reached a conclusion, output a final text message. Do not call more tools.",
         "messages": [
           {
@@ -357,7 +357,7 @@
           "max_tokens": 4096
         }
       },
-      "request_hash": "47a75057513a956c0269ed3ae33fb8ec9b0d1d7f7e33a46c7d16595002b95e69",
+      "request_hash": "1effce7fe885e92cc75dc96dd450e5768366c6263bd3084402f4a057dd48ab87",
       "response": {
         "content": [
           {
@@ -377,7 +377,7 @@
         ],
         "stop_reason": "tool_use",
         "model_served": "mock-model",
-        "request_id": "req-demo-73angqsu4vp",
+        "request_id": "req-demo-l6ivz5jdq5",
         "usage": {
           "input_tokens": 100,
           "output_tokens": 50
@@ -389,8 +389,8 @@
     },
     {
       "type": "decision",
-      "id": "92a4e6e2-264e-4855-9f17-6e48114ee829",
-      "timestamp": 1778679174015,
+      "id": "2644187a-c94a-4d82-88f4-484f3a74bcda",
+      "timestamp": 1778825515933,
       "decision": "investigate_prs",
       "label": "Investigate recent PRs",
       "reasoning": "Most likely source of regression is recent merged code.",
@@ -401,10 +401,10 @@
     },
     {
       "type": "llm_call",
-      "id": "a748fa5a-736c-4322-9552-d8a4dc2dec7f",
-      "timestamp": 1778679174016,
+      "id": "8187bda9-1fde-4275-8193-0151ce918753",
+      "timestamp": 1778825515934,
       "request": {
-        "model": "mock-model",
+        "model": "claude-sonnet-4-6",
         "system": "You are an investigation agent in the Adaptive Workspace runtime.\nYour job is to investigate a question by calling tools and explicitly declaring your decisions.\n\n# Tools available\n- get_recent_prs: List recent pull requests for a GitHub repo. Returns summaries (number, title, body, state, author, timestamps, head/base SHA).\n- get_pr_diff: Fetch the raw unified diff (`diff --git ...`) for a given pull request.\n- get_pr_comments: Fetch issue comments on a pull request (general PR discussion, not inline review comments).\n- get_commit_history: List commits on the default branch, optionally filtered by `since` (ISO 8601 timestamp).\n- emit_decision: Declare an explicit decision point in your investigation.\nCall this BEFORE fetching information that depends on a choice you just made,\nso the trace records why you went one way and not another.\nFields:\n  decision: stable machine-readable identifier (snake_case), e.g. 'investigate_prs'\n  label: short human-readable label\n  reasoning: one sentence — why this option, not the alternatives\n  alternatives: optional list of other decision identifiers you considered\n\n# How to work\n1. At each fork in your reasoning, call emit_decision BEFORE calling investigative tools.\n2. Call tools to gather evidence.\n3. Repeat: emit_decision → call tools → ...\n4. When you've reached a conclusion, output a final text message. Do not call more tools.",
         "messages": [
           {
@@ -747,7 +747,7 @@
           "max_tokens": 4096
         }
       },
-      "request_hash": "733a6f58eb02ca21855b47ceac84cbccc0504acb07856527f59f4fd0d20f6b56",
+      "request_hash": "d3aeb83eb03f6785f701315a62b5a03ff4406010c69ca20c6592656d00db6e2e",
       "response": {
         "content": [
           {
@@ -762,7 +762,7 @@
         ],
         "stop_reason": "tool_use",
         "model_served": "mock-model",
-        "request_id": "req-demo-eavnesr5o0n",
+        "request_id": "req-demo-hvj8izrd0ha",
         "usage": {
           "input_tokens": 100,
           "output_tokens": 50
@@ -774,8 +774,8 @@
     },
     {
       "type": "tool_call",
-      "id": "ba9fbe9d-6044-4d75-85de-d7da4045c8d3",
-      "timestamp": 1778679174019,
+      "id": "ac761007-8375-4c87-a455-78239d4512f0",
+      "timestamp": 1778825515937,
       "tool": "get_recent_prs",
       "arguments": {
         "repo": "cash-codes/checkout-service",
@@ -949,10 +949,10 @@
     },
     {
       "type": "llm_call",
-      "id": "b4c70cd8-5c7b-4639-b5a0-d5f779b26892",
-      "timestamp": 1778679174019,
+      "id": "f42f4034-b6e4-481c-b6f1-3d6db5b2b2ac",
+      "timestamp": 1778825515937,
       "request": {
-        "model": "mock-model",
+        "model": "claude-sonnet-4-6",
         "system": "You are an investigation agent in the Adaptive Workspace runtime.\nYour job is to investigate a question by calling tools and explicitly declaring your decisions.\n\n# Tools available\n- get_recent_prs: List recent pull requests for a GitHub repo. Returns summaries (number, title, body, state, author, timestamps, head/base SHA).\n- get_pr_diff: Fetch the raw unified diff (`diff --git ...`) for a given pull request.\n- get_pr_comments: Fetch issue comments on a pull request (general PR discussion, not inline review comments).\n- get_commit_history: List commits on the default branch, optionally filtered by `since` (ISO 8601 timestamp).\n- emit_decision: Declare an explicit decision point in your investigation.\nCall this BEFORE fetching information that depends on a choice you just made,\nso the trace records why you went one way and not another.\nFields:\n  decision: stable machine-readable identifier (snake_case), e.g. 'investigate_prs'\n  label: short human-readable label\n  reasoning: one sentence — why this option, not the alternatives\n  alternatives: optional list of other decision identifiers you considered\n\n# How to work\n1. At each fork in your reasoning, call emit_decision BEFORE calling investigative tools.\n2. Call tools to gather evidence.\n3. Repeat: emit_decision → call tools → ...\n4. When you've reached a conclusion, output a final text message. Do not call more tools.",
         "messages": [
           {
@@ -1295,7 +1295,7 @@
           "max_tokens": 4096
         }
       },
-      "request_hash": "02d66febd7aa859fdfdb8fd1de71bd1b910d17db3033f543ab452db9d944e851",
+      "request_hash": "1212ec3c4bcd9ab7d7d0ca4c8268a60ab210dbbe3796f677d0aceb903ac3966f",
       "response": {
         "content": [
           {
@@ -1310,7 +1310,7 @@
         ],
         "stop_reason": "tool_use",
         "model_served": "mock-model",
-        "request_id": "req-demo-jxdpdwr88bb",
+        "request_id": "req-demo-duze33z42uf",
         "usage": {
           "input_tokens": 100,
           "output_tokens": 50
@@ -1322,8 +1322,8 @@
     },
     {
       "type": "tool_call",
-      "id": "b67c6364-c2e6-4441-9bd7-323005e8df95",
-      "timestamp": 1778679174019,
+      "id": "325a1b59-d88a-4f9d-af23-22e2046693d8",
+      "timestamp": 1778825515938,
       "tool": "get_pr_diff",
       "arguments": {
         "repo": "cash-codes/checkout-service",
@@ -1336,10 +1336,10 @@
     },
     {
       "type": "llm_call",
-      "id": "6b66840e-1c59-4b9e-b1f8-a95a86125313",
-      "timestamp": 1778681548274,
+      "id": "e0954291-c86a-4ee9-ae6b-240acd20c090",
+      "timestamp": 1778825516871,
       "request": {
-        "model": "mock-model",
+        "model": "claude-sonnet-4-6",
         "system": "You are an investigation agent in the Adaptive Workspace runtime.\nYour job is to investigate a question by calling tools and explicitly declaring your decisions.\n\n# Tools available\n- get_recent_prs: List recent pull requests for a GitHub repo. Returns summaries (number, title, body, state, author, timestamps, head/base SHA).\n- get_pr_diff: Fetch the raw unified diff (`diff --git ...`) for a given pull request.\n- get_pr_comments: Fetch issue comments on a pull request (general PR discussion, not inline review comments).\n- get_commit_history: List commits on the default branch, optionally filtered by `since` (ISO 8601 timestamp).\n- emit_decision: Declare an explicit decision point in your investigation.\nCall this BEFORE fetching information that depends on a choice you just made,\nso the trace records why you went one way and not another.\nFields:\n  decision: stable machine-readable identifier (snake_case), e.g. 'investigate_prs'\n  label: short human-readable label\n  reasoning: one sentence — why this option, not the alternatives\n  alternatives: optional list of other decision identifiers you considered\n\n# How to work\n1. At each fork in your reasoning, call emit_decision BEFORE calling investigative tools.\n2. Call tools to gather evidence.\n3. Repeat: emit_decision → call tools → ...\n4. When you've reached a conclusion, output a final text message. Do not call more tools.",
         "messages": [
           {
@@ -1706,7 +1706,7 @@
           "max_tokens": 4096
         }
       },
-      "request_hash": "d9ce19b990eabafe2bf43469ffa6132a7742509dd0149db5a32b5c24e83382e6",
+      "request_hash": "d56babe236ec747ab16f9801379274371fe0c851016f0e4a741bf8627fa0a7b2",
       "response": {
         "content": [
           {
@@ -1721,7 +1721,7 @@
         ],
         "stop_reason": "tool_use",
         "model_served": "mock-model",
-        "request_id": "req-fork-l5mlnus6wdr",
+        "request_id": "req-fork-5bme10nvfd",
         "usage": {
           "input_tokens": 100,
           "output_tokens": 50
@@ -1733,8 +1733,8 @@
     },
     {
       "type": "tool_call",
-      "id": "03cb3769-a9e6-4e52-ade8-cc69893fb5d2",
-      "timestamp": 1778681548274,
+      "id": "0823176a-f8df-4b09-9f4a-ead12f2f31f3",
+      "timestamp": 1778825516872,
       "tool": "get_pr_diff",
       "arguments": {
         "repo": "cash-codes/checkout-service",
@@ -1747,10 +1747,10 @@
     },
     {
       "type": "llm_call",
-      "id": "185705da-0ba0-4d1b-b089-d444418271ed",
-      "timestamp": 1778681548275,
+      "id": "fb6eb075-b6ed-4424-827f-44a58db8105e",
+      "timestamp": 1778825516872,
       "request": {
-        "model": "mock-model",
+        "model": "claude-sonnet-4-6",
         "system": "You are an investigation agent in the Adaptive Workspace runtime.\nYour job is to investigate a question by calling tools and explicitly declaring your decisions.\n\n# Tools available\n- get_recent_prs: List recent pull requests for a GitHub repo. Returns summaries (number, title, body, state, author, timestamps, head/base SHA).\n- get_pr_diff: Fetch the raw unified diff (`diff --git ...`) for a given pull request.\n- get_pr_comments: Fetch issue comments on a pull request (general PR discussion, not inline review comments).\n- get_commit_history: List commits on the default branch, optionally filtered by `since` (ISO 8601 timestamp).\n- emit_decision: Declare an explicit decision point in your investigation.\nCall this BEFORE fetching information that depends on a choice you just made,\nso the trace records why you went one way and not another.\nFields:\n  decision: stable machine-readable identifier (snake_case), e.g. 'investigate_prs'\n  label: short human-readable label\n  reasoning: one sentence — why this option, not the alternatives\n  alternatives: optional list of other decision identifiers you considered\n\n# How to work\n1. At each fork in your reasoning, call emit_decision BEFORE calling investigative tools.\n2. Call tools to gather evidence.\n3. Repeat: emit_decision → call tools → ...\n4. When you've reached a conclusion, output a final text message. Do not call more tools.",
         "messages": [
           {
@@ -2117,7 +2117,7 @@
           "max_tokens": 4096
         }
       },
-      "request_hash": "59a1ef4ce75355ed4d7611f8045e5e0010b4c76815a62170ecb9e1c93b5c7ee7",
+      "request_hash": "ff67f5b85f0a4c6fad337a78c1ff488cada08572af87481b3f1ee3433c5c4972",
       "response": {
         "content": [
           {
@@ -2132,7 +2132,7 @@
         ],
         "stop_reason": "tool_use",
         "model_served": "mock-model",
-        "request_id": "req-fork-bwyweszbvk",
+        "request_id": "req-fork-nyzrxqheb4l",
         "usage": {
           "input_tokens": 100,
           "output_tokens": 50
@@ -2144,8 +2144,8 @@
     },
     {
       "type": "tool_call",
-      "id": "a965bb4d-2379-4da3-bf9f-c8d5143999ad",
-      "timestamp": 1778681548275,
+      "id": "edbbc46a-f0f8-4a86-8ee3-65517e9ec50f",
+      "timestamp": 1778825516873,
       "tool": "get_pr_comments",
       "arguments": {
         "repo": "cash-codes/checkout-service",
@@ -2175,10 +2175,10 @@
     },
     {
       "type": "llm_call",
-      "id": "ca1c3e06-19c3-4e12-8876-427be6450bf8",
-      "timestamp": 1778681548277,
+      "id": "b0a5c0d6-a293-465e-a4b6-9869f73aa1d7",
+      "timestamp": 1778825516873,
       "request": {
-        "model": "mock-model",
+        "model": "claude-sonnet-4-6",
         "system": "You are an investigation agent in the Adaptive Workspace runtime.\nYour job is to investigate a question by calling tools and explicitly declaring your decisions.\n\n# Tools available\n- get_recent_prs: List recent pull requests for a GitHub repo. Returns summaries (number, title, body, state, author, timestamps, head/base SHA).\n- get_pr_diff: Fetch the raw unified diff (`diff --git ...`) for a given pull request.\n- get_pr_comments: Fetch issue comments on a pull request (general PR discussion, not inline review comments).\n- get_commit_history: List commits on the default branch, optionally filtered by `since` (ISO 8601 timestamp).\n- emit_decision: Declare an explicit decision point in your investigation.\nCall this BEFORE fetching information that depends on a choice you just made,\nso the trace records why you went one way and not another.\nFields:\n  decision: stable machine-readable identifier (snake_case), e.g. 'investigate_prs'\n  label: short human-readable label\n  reasoning: one sentence — why this option, not the alternatives\n  alternatives: optional list of other decision identifiers you considered\n\n# How to work\n1. At each fork in your reasoning, call emit_decision BEFORE calling investigative tools.\n2. Call tools to gather evidence.\n3. Repeat: emit_decision → call tools → ...\n4. When you've reached a conclusion, output a final text message. Do not call more tools.",
         "messages": [
           {
@@ -2545,7 +2545,7 @@
           "max_tokens": 4096
         }
       },
-      "request_hash": "28b5856d233960219d9aa00fadef90f6418dec038282d4da2b42f26a152e1b34",
+      "request_hash": "4a1499390dd5bde4d68451199289dbd959072c77ee8c0e382c17e21d2b7761a7",
       "response": {
         "content": [
           {
@@ -2555,7 +2555,7 @@
         ],
         "stop_reason": "end_turn",
         "model_served": "mock-model",
-        "request_id": "req-fork-8b7lylf81rk",
+        "request_id": "req-fork-h90rk0d4rom",
         "usage": {
           "input_tokens": 100,
           "output_tokens": 50
@@ -2567,94 +2567,94 @@
     },
     {
       "type": "runtime",
-      "id": "864c0198-c3b7-4f80-89f5-4325149e3240",
-      "timestamp": 1778681548274,
+      "id": "4eb7297a-4b23-41b2-817c-54b4f7525f8e",
+      "timestamp": 1778825516871,
       "kind": "now",
-      "value": 1778681548274
+      "value": 1778825516871
     },
     {
       "type": "runtime",
-      "id": "105d35cf-c77f-4c29-8c78-fd53b92d5361",
-      "timestamp": 1778681548274,
+      "id": "95750f2c-b758-4865-a923-b254d9e47326",
+      "timestamp": 1778825516871,
       "kind": "now",
-      "value": 1778681548274
+      "value": 1778825516871
     },
     {
       "type": "runtime",
-      "id": "2302af32-7015-4499-b375-9e371da7d4a6",
-      "timestamp": 1778681548274,
+      "id": "56544cac-64a2-4acf-a87c-94d2d376341c",
+      "timestamp": 1778825516871,
       "kind": "random_uuid",
-      "value": "6b66840e-1c59-4b9e-b1f8-a95a86125313"
+      "value": "e0954291-c86a-4ee9-ae6b-240acd20c090"
     },
     {
       "type": "runtime",
-      "id": "d5fcf885-be87-4e52-b1a4-2abdd8d71093",
-      "timestamp": 1778681548274,
+      "id": "ac9d2eab-bb78-4b9c-83aa-1a01d21cb32c",
+      "timestamp": 1778825516872,
       "kind": "random_uuid",
-      "value": "03cb3769-a9e6-4e52-ade8-cc69893fb5d2"
+      "value": "0823176a-f8df-4b09-9f4a-ead12f2f31f3"
     },
     {
       "type": "runtime",
-      "id": "2bbf4e8a-9fe7-4a30-acaf-6f52c7d52b87",
-      "timestamp": 1778681548274,
+      "id": "f7c17d01-126e-4e84-b52b-92fda684671d",
+      "timestamp": 1778825516872,
       "kind": "now",
-      "value": 1778681548274
+      "value": 1778825516872
     },
     {
       "type": "runtime",
-      "id": "d4c43b18-8c01-493c-8b14-60fc38192128",
-      "timestamp": 1778681548275,
+      "id": "2a686851-5867-4689-96b4-0e2dea2d19b1",
+      "timestamp": 1778825516872,
       "kind": "now",
-      "value": 1778681548275
+      "value": 1778825516872
     },
     {
       "type": "runtime",
-      "id": "65f48d98-f1cd-4081-9114-9ab644a98293",
-      "timestamp": 1778681548275,
+      "id": "7bea24d2-adfc-4f6a-a2d9-9c114a825570",
+      "timestamp": 1778825516872,
       "kind": "now",
-      "value": 1778681548275
+      "value": 1778825516872
     },
     {
       "type": "runtime",
-      "id": "901d5ff3-9310-4b92-b6d0-1217888b3533",
-      "timestamp": 1778681548275,
+      "id": "8403bee9-807d-45d7-a5de-b9f3a9647236",
+      "timestamp": 1778825516872,
       "kind": "random_uuid",
-      "value": "185705da-0ba0-4d1b-b089-d444418271ed"
+      "value": "fb6eb075-b6ed-4424-827f-44a58db8105e"
     },
     {
       "type": "runtime",
-      "id": "e716c09d-4da8-43cf-96bf-d45fe220c9f2",
-      "timestamp": 1778681548275,
+      "id": "44740c31-1219-4b80-9a52-34d921643fa1",
+      "timestamp": 1778825516873,
       "kind": "random_uuid",
-      "value": "a965bb4d-2379-4da3-bf9f-c8d5143999ad"
+      "value": "edbbc46a-f0f8-4a86-8ee3-65517e9ec50f"
     },
     {
       "type": "runtime",
-      "id": "860cb30e-ee80-4938-b78d-397ea136a1f9",
-      "timestamp": 1778681548275,
+      "id": "e58aa391-a1f9-47d1-aecb-220e4c9b34b2",
+      "timestamp": 1778825516873,
       "kind": "now",
-      "value": 1778681548275
+      "value": 1778825516873
     },
     {
       "type": "runtime",
-      "id": "48999319-3b7d-410a-ae06-e60f085a91e8",
-      "timestamp": 1778681548277,
+      "id": "56f3ab4e-3c14-45d7-9084-7b1807e7e9aa",
+      "timestamp": 1778825516873,
       "kind": "now",
-      "value": 1778681548277
+      "value": 1778825516873
     },
     {
       "type": "runtime",
-      "id": "0b25d1b1-1197-428d-9dec-500e400207e1",
-      "timestamp": 1778681548277,
+      "id": "393c2c08-2d64-470c-a18d-6b7dbc71a56d",
+      "timestamp": 1778825516873,
       "kind": "now",
-      "value": 1778681548277
+      "value": 1778825516873
     },
     {
       "type": "runtime",
-      "id": "52209b66-635b-4d34-8f56-949bc16344c3",
-      "timestamp": 1778681548277,
+      "id": "4ac1b9b2-55d5-464b-a089-88609a0b726b",
+      "timestamp": 1778825516873,
       "kind": "random_uuid",
-      "value": "ca1c3e06-19c3-4e12-8876-427be6450bf8"
+      "value": "b0a5c0d6-a293-465e-a4b6-9869f73aa1d7"
     }
   ]
 }

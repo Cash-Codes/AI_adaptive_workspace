@@ -31,7 +31,7 @@ export function EventCard({ event, selected }: Props) {
   return (
     <div
       className={[
-        "flex gap-3 border-l-2 bg-white p-3 transition-colors",
+        "flex gap-3 border-l-2 p-3 transition-colors",
         meta.accent,
         selected ? "bg-blue-50" : "hover:bg-gray-50",
       ].join(" ")}

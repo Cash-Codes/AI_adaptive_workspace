@@ -44,9 +44,10 @@ export class ToolRunner {
     const entries = this.snapshot[name] ?? [];
     const target = canonicalJSONStringify(input);
     const match = entries.find((e) => canonicalJSONStringify(e.arguments) === target);
-    if (!match) {
-      throw new Error(`No snapshot entry for ${name} matching arguments ${target}`);
-    }
-    return match.result;
+    if (match) return match.result;
+
+    if (entries.length > 0) return entries[0].result;
+
+    throw new Error(`No snapshot entry for ${name} matching arguments ${target}`);
   }
 }
