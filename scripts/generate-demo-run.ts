@@ -88,7 +88,7 @@ async function main() {
   const orch = new WorkflowOrchestrator({
     llm: provider,
     toolRunner: runner,
-    model: "mock-model",
+    model: "claude-sonnet-4-6",
     workflow: "github-investigation",
   });
 
