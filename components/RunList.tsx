@@ -40,7 +40,7 @@ export function RunList({ runs }: { runs: RunMetadata[] }) {
               {new Date(r.created_at).toISOString()}
             </td>
             <td className="px-3 py-2 font-mono text-xs text-gray-500">
-              {r.base_run_id ? `${shortId(r.base_run_id)} (fork)` : "—"}
+              {r.base_run_id ? `${shortId(r.base_run_id)} (fork)` : "-"}
             </td>
           </tr>
         ))}

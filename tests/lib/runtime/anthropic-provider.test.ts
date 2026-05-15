@@ -27,7 +27,7 @@ describe("AnthropicLLMProvider", () => {
     const fakeClient = { messages: { create: sdkCreate } };
 
     const provider = new AnthropicLLMProvider({
-      // @ts-expect-error — injecting a minimal stub
+      // @ts-expect-error - injecting a minimal stub
       client: fakeClient,
     });
 
@@ -61,7 +61,7 @@ describe("AnthropicLLMProvider", () => {
     });
     const fakeClient = { messages: { create: sdkCreate } };
     const provider = new AnthropicLLMProvider({
-      // @ts-expect-error — injecting a minimal stub
+      // @ts-expect-error - injecting a minimal stub
       client: fakeClient,
     });
 

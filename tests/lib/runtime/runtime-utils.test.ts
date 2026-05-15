@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { Runtime } from "@/lib/runtime/runtime-utils";
 import type { RuntimeEvent } from "@/lib/events";
 
-describe("Runtime — record mode", () => {
+describe("Runtime - record mode", () => {
   it("now() returns Date.now()-ish value and emits a RuntimeEvent", () => {
     const runtime = new Runtime({ mode: "record" });
     const before = Date.now();
@@ -34,7 +34,7 @@ describe("Runtime — record mode", () => {
   });
 });
 
-describe("Runtime — replay mode", () => {
+describe("Runtime - replay mode", () => {
   it("now() returns recorded values in order", () => {
     const recorded: RuntimeEvent[] = [
       { type: "runtime", id: "e1", timestamp: 1, kind: "now", value: 100 },

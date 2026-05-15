@@ -55,8 +55,8 @@ const forkRunFixture: Run = {
 describe("<SideBySideRunView />", () => {
   it("renders both columns with their headers", () => {
     render(<SideBySideRunView base={baseRun} fork={forkRunFixture} />);
-    expect(screen.getByText(/base — base/i)).toBeTruthy();
-    expect(screen.getByText(/fork — fork/i)).toBeTruthy();
+    expect(screen.getByText(/base - base/i)).toBeTruthy();
+    expect(screen.getByText(/fork - fork/i)).toBeTruthy();
   });
 
   it("renders pre-fork events in both columns (same id)", () => {
