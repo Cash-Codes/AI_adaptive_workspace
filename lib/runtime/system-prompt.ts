@@ -10,7 +10,7 @@ export const emitDecisionTool: ToolDefinition = {
     "Fields:",
     "  decision: stable machine-readable identifier (snake_case), e.g. 'investigate_prs'",
     "  label: short human-readable label",
-    "  reasoning: one sentence — why this option, not the alternatives",
+    "  reasoning: one sentence - why this option, not the alternatives",
     "  alternatives: optional list of other decision identifiers you considered",
   ].join("\n"),
   input_schema: {

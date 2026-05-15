@@ -5,8 +5,8 @@ import type { Snapshot } from "@/lib/tools/types";
  *   "Recent PRs caused performance regressions."
  *
  * The two plausible culprits are:
- *   - PR #142  "Refactor user query for performance"      (DB change — original conclusion)
- *   - PR #138  "Add Redis caching layer for product catalog" (caching change — fork conclusion)
+ *   - PR #142  "Refactor user query for performance"      (DB change - original conclusion)
+ *   - PR #138  "Add Redis caching layer for product catalog" (caching change - fork conclusion)
  *
  * Other PRs are intentionally innocuous so the agent has noise to filter through.
  */
@@ -50,7 +50,7 @@ export const githubSnapshot: Snapshot = {
         {
           number: 142,
           title: "Refactor user query for performance",
-          body: "Inlines the user-lookup join, removes the cached prepared-statement path, and switches to a single composed SELECT. Should be faster on cold cache.",
+          body: "Inlines the user-lookup join, removes the cached prepared-statement path and switches to a single composed SELECT. Should be faster on cold cache.",
           state: "closed",
           user: { login: "dave" },
           created_at: "2026-05-06T17:45:00Z",
@@ -305,7 +305,7 @@ index jjjjjjj..kkkkkkk 100644
         },
       ],
     },
-    // Innocuous PRs have no review discussion of note — empty arrays so the
+    // Innocuous PRs have no review discussion of note - empty arrays so the
     // live agent's get_pr_comments calls succeed during fork exploration.
     { arguments: { repo: REPO, pr_id: 145 }, result: [] },
     { arguments: { repo: REPO, pr_id: 144 }, result: [] },

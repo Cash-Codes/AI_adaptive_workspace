@@ -73,7 +73,7 @@ async function main() {
     llmCall([
       {
         type: "text",
-        text: "PR #142 (Refactor user query for performance) likely caused the regression. It removes the cached prepared-statement path, forcing Postgres to re-plan every query — reviewer-1 raised exactly this concern in the PR thread.",
+        text: "PR #142 (Refactor user query for performance) likely caused the regression. It removes the cached prepared-statement path, forcing Postgres to re-plan every query - reviewer-1 raised exactly this concern in the PR thread.",
       },
     ]),
   ]);

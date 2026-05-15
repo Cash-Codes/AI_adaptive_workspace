@@ -36,7 +36,7 @@ function buildRunner() {
   });
 }
 
-describe("forkRun — diverges from base after the fork point", () => {
+describe("forkRun - diverges from base after the fork point", () => {
   it("forks on a tool output and produces diverged events", async () => {
     const baseProvider = new MockLLMProvider([
       llmCall(

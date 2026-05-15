@@ -19,7 +19,7 @@ type Pair = {
   // True only for the FIRST pair where divergence is detected (so the
   // "Divergence point" banner appears exactly once).
   divergent: boolean;
-  // True for every pair at or after the divergence point — drives the
+  // True for every pair at or after the divergence point - drives the
   // amber background tint on both cells, making the post-fork area
   // visible at a glance.
   postFork: boolean;
@@ -96,10 +96,10 @@ export function SideBySideRunView({ base, fork }: Props) {
     <div className="border-t border-gray-200">
       <div className="grid grid-cols-2">
         <h2 className="border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-600">
-          Base — {base.metadata.id}
+          Base - {base.metadata.id}
         </h2>
         <h2 className="border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-600">
-          Fork — {fork.metadata.id}
+          Fork - {fork.metadata.id}
         </h2>
       </div>
       <ol className="divide-y divide-gray-100">
@@ -107,7 +107,7 @@ export function SideBySideRunView({ base, fork }: Props) {
           <li key={i}>
             {p.divergent && (
               <div className="bg-amber-50 px-3 py-1 text-xs font-medium text-amber-800">
-                Divergence point {p.edited && "— edited"}
+                Divergence point {p.edited && "- edited"}
               </div>
             )}
             <div className="grid grid-cols-2 divide-x divide-gray-100">
@@ -138,7 +138,7 @@ export function SideBySideRunView({ base, fork }: Props) {
         ))}
       </ol>
 
-      {/* Inspector panel — same component the single-run view uses, swaps
+      {/* Inspector panel - same component the single-run view uses, swaps
           content based on which cell was clicked. Stays on the same page
           (no navigation), so the side-by-side timeline remains visible. */}
       <div className="border-t border-gray-200 bg-white">

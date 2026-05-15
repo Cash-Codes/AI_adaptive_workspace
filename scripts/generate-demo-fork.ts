@@ -62,7 +62,7 @@ async function main() {
     llmCall([
       {
         type: "text",
-        text: "With the DB-change signal removed from #142, the leading suspect becomes PR #138 (Redis caching layer). Reviewer-2 flagged its 5-minute TTL — under load, this could surface as elevated tail latency from cache misses.",
+        text: "With the DB-change signal removed from #142, the leading suspect becomes PR #138 (Redis caching layer). Reviewer-2 flagged its 5-minute TTL - under load, this could surface as elevated tail latency from cache misses.",
       },
     ]),
   ]);

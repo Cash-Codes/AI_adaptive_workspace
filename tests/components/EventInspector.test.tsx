@@ -41,7 +41,7 @@ describe("<EventInspector />", () => {
     expect(screen.getByText(/result/i)).toBeTruthy();
   });
 
-  it("renders LLM call detail with model, request hash, and token usage", () => {
+  it("renders LLM call detail with model, request hash and token usage", () => {
     const event: Event = {
       type: "llm_call",
       id: "l-1",

@@ -36,7 +36,7 @@ function buildRunner() {
   });
 }
 
-describe("replayRun — identical reproduction", () => {
+describe("replayRun - identical reproduction", () => {
   it("replays a single-step run (text only) to identical events", async () => {
     const provider = new MockLLMProvider([llmCall([mockText("done")])]);
     const orch = new WorkflowOrchestrator({

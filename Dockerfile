@@ -22,7 +22,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
-# Recorded run fixtures (demo-run.json, demo-fork.json) — read at request
+# Recorded run fixtures (demo-run.json, demo-fork.json) - read at request
 # time by lib/server/runs.ts. Without these, /runs/demo-run is a 500 in
 # production.
 COPY --from=builder /app/data ./data
